@@ -82,3 +82,20 @@ lass TestTransactionRoutesExtended:
         assert response.status_code == 200
 
 
+class TestFraudRoutesExtended:
+    """Extended tests for fraud routes."""
+
+    def test_predict_fraud(self, client):
+        """Test fraud prediction."""
+        response = client.get("/api/transaction?page=1&limit=1")
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("data"):
+                transaction = data["data"][0]
+                response = client.post(
+                    "/api/fraud/predict",
+                    json=transaction,
+                )
+                assert response.status_code == 200
+
+
