@@ -15,3 +15,12 @@ from transaction_api.services.fraud_service import FraudService
 logger = get_logger(__name__)
 
 router: APIRouter = APIRouter(prefix="/api/fraud", tags=["fraud"])
+
+def get_service() -> FraudService:
+    """Get fraud service instance."""
+    if app_context.repository is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Repository not initialized",
+        )
+    return FraudService(app_context.repository)
