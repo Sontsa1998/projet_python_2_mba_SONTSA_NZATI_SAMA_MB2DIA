@@ -73,3 +73,55 @@ def test_fraud_identification_correctness(transactions):
     # Verify fraud amount
     expected_fraud_amount = sum(t.amount for t in transactions if t.errors)
     assert abs(summary.total_fraud_amount - expected_fraud_amount) < 0.01
+
+
+@given(
+    st.lists(
+        transaction_strategy(),
+        min_size=1,
+        max_size=100,
+        unique_by=lambda t: t.id,
+    )
+)
+def test_fraud_type_statistics_accuracy(transactions):
+    """
+    Property 14: Fraud Type Statistics Accuracy.
+
+    For any fraud by use_chip query, for each use_chip type, the fraud
+    count should equal the number of fraudulent transactions with that type,
+    and fraud_rate should be fraud_count divided by total transactions of
+    that type.
+
+    **Validates: Requirements 14.1, 14.2, 14.3**
+    """
+    repo = TransactionRepository()
+    repo.data_load_date = datetime.utcnow()
+    service = FraudService(repo)
+
+    # Load transactions
+    for transaction in transactions:
+        repo._add_transaction(transaction)
+
+    # Get fraud by use_chip type
+    fraud_stats = service.get_fraud_by_type()
+
+    # Verify each use_chip type's fraud count and rate
+    for type_stat in fraud_stats:
+        use_chip_transactions = repo.get_all_by_use_chip(type_stat.type)
+        expected_fraud_count = len(
+            [t for t in use_chip_transactions if t.errors]
+        )
+        expected_total_count = len(use_chip_transactions)
+        expected_fraud_rate = (
+            expected_fraud_count / expected_total_count
+            if expected_total_count > 0
+            else 0.0
+        )
+
+        assert type_stat.fraud_count == expected_fraud_count
+        assert type_stat.total_count == expected_total_count
+        assert abs(type_stat.fraud_rate - expected_fraud_rate) < 0.001
+
+    # Verify sorted by fraud rate descending
+    fraud_rates = [t.fraud_rate for t in fraud_stats]
+    assert fraud_rates == sorted(fraud_rates, reverse=True)
