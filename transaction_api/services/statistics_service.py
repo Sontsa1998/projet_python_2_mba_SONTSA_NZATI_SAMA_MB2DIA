@@ -89,3 +89,28 @@ class StatisticsService:
             )
 
         return AmountDistribution(buckets=buckets)
+
+    def get_stats_by_type(self) -> List[TypeStats]:
+        """Get statistics grouped by transaction type."""
+        types = self.repository.get_all_types()
+        type_stats = []
+
+        for mcc in types:
+            transactions = self.repository.get_all_by_type(mcc)
+            if transactions:
+                count = len(transactions)
+                total_amount = sum(t.amount for t in transactions)
+                average_amount = total_amount / count if count > 0 else 0.0
+
+                type_stats.append(
+                    TypeStats(
+                        type=mcc,
+                        count=count,
+                        total_amount=total_amount,
+                        average_amount=average_amount,
+                    )
+                )
+
+        # Sort by count descending
+        type_stats.sort(key=lambda x: x.count, reverse=True)
+        return type_stats
