@@ -157,4 +157,80 @@ class TransactionRepository:
         """Get a transaction by ID."""
         return self.transactions.get(transaction_id)
     
+    def search(
+        self, filters: SearchFilters, page: int = 1, limit: int = 50
+    ) -> Tuple[List[Transaction], int]:
+        """Search transactions with filters."""
+        if page < 1:
+            page = 1
+        if limit < 1 or limit > 1000:
+            limit = 50
+
+        # Start with all transactions
+        results = list(self.transactions.values())
+        self.df = pd.DataFrame([vars(t) for t in results])
+        df1 = self.df.copy()
+
+        # Initialize mask for filtering
+        mask = pd.Series([True] * len(df1), index=df1.index)
+
+        # Apply filters using mask
+        if filters.client_id and filters.client_id not in ("", "string"):
+            mask &= df1["client_id"] == str(filters.client_id)
+
+        if filters.transaction_id and filters.transaction_id not in (
+            "",
+            "string",
+        ):
+            mask &= df1["id"] == str(filters.transaction_id)
+
+        if filters.use_chip and filters.use_chip not in ("", "string"):
+            mask &= df1["use_chip"] == str(filters.use_chip)
+
+        if filters.merchant_city and filters.merchant_city not in (
+            "",
+            "string",
+        ):
+            mask &= df1["merchant_city"] == str(filters.merchant_city)
+        if filters.min_amount is not None:
+            mask &= df1["amount"] >= float(filters.min_amount)
+        if filters.max_amount is not None:
+            mask &= df1["amount"] <= float(filters.max_amount)
+
+        # Apply mask to get filtered results
+        df_filtered = df1[mask]
+        # Convert filtered dataframe back to Transaction objects
+        filtered_results: List[Transaction] = []
+        for _, row in df_filtered.iterrows():
+            transaction = Transaction(
+                id=str(row["id"]),
+                date=row["date"],
+                client_id=str(row["client_id"]),
+                card_id=str(row["card_id"]),
+                amount=float(row["amount"]),
+                use_chip=str(row["use_chip"]),
+                merchant_id=str(row["merchant_id"]),
+                merchant_city=str(row["merchant_city"]),
+                merchant_state=str(row["merchant_state"]),
+                zip=str(row["zip"]),
+                mcc=str(row["mcc"]),
+                errors=row["errors"] if pd.notna(row["errors"]) else None,
+            )
+            filtered_results.append(transaction)
+
+        # Sort by date descending
+        filtered_results = sorted(
+            filtered_results,
+            key=lambda t: t.date,
+            reverse=True,
+        )
+        df_filtered = None
+
+        # Apply pagination
+        offset = (page - 1) * limit
+        total_count = len(filtered_results)
+        paginated_results = filtered_results[offset: offset + limit]
+
+        return paginated_results, total_count
+
     
