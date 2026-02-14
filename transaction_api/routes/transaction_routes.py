@@ -140,3 +140,13 @@ async def get_transaction_types() -> list[dict]:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error retrieving transaction types",
         )
+
+@router.get(
+    "/Latest/recent",
+    response_model=PaginatedResponse[Transaction],
+)
+async def get_recent_transactions(
+    limit: int = Query(50, ge=1, le=1000),
+) -> PaginatedResponse[Transaction]:
+    """Get recent transactions."""
+    try:
