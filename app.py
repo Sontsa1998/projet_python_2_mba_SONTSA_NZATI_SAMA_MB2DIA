@@ -321,3 +321,48 @@ elif page == "Transactions":
                         f"Total: {results.get('total_count', 0)} transactions"
                     )
 
+# Fraude Page
+elif page == "Fraude":
+    st.title("🚨 Détection de Fraude")
+
+    tab1, tab2 = st.tabs(["Fraudes Détectées", "Statistiques par Type"])
+
+    with tab1:
+        st.subheader("Transactions Frauduleuses")
+
+        fraud_summary = get_data("/fraud/summary")
+        if fraud_summary:
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric(
+                    "Fraudes Détectées",
+                    fraud_summary.get("total_fraud_count", 0),
+                )
+            with col2:
+                st.metric(
+                    "Taux de Fraude",
+                    f"{fraud_summary.get('fraud_rate', 0)*100:.2f}%",
+                )
+            with col3:
+                st.metric(
+                    "Montant Frauduleux",
+                    f"${fraud_summary.get('total_fraud_amount', 0):,.2f}",
+                )
+
+    with tab2:
+        st.subheader("Fraudes par Type de Transaction")
+
+        fraud_by_type = get_data("/fraud/by-type")
+        if fraud_by_type:
+            df = pd.DataFrame(fraud_by_type)
+            st.dataframe(df, use_container_width=True)
+
+            # Chart
+            if not df.empty:
+                fig = px.bar(
+                    df,
+                    x="type",
+                    y="fraud_count",
+                    title="Fraudes par Type de Transaction",
+                )
+                st.plotly_chart(fig, use_container_width=True)
