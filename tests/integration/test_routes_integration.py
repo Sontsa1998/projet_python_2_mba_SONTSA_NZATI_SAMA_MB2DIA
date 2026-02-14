@@ -77,3 +77,93 @@ class TestCustomerRoutes:
         assert len(data) <= 50
 
 
+class TestTransactionRoutes:
+    """Test transaction routes."""
+
+    def test_get_all_transactions(self, client):
+        """Test getting all transactions."""
+        response = client.get("/api/transaction?page=1&limit=10")
+        assert response.status_code == 200
+        data = response.json()
+        assert "data" in data
+        assert len(data["data"]) <= 10
+
+    def test_get_transaction_by_id(self, client):
+        """Test getting transaction by ID."""
+        response = client.get("/api/transaction?page=1&limit=1")
+        assert response.status_code == 200
+        data = response.json()
+        if data["data"]:
+            transaction_id = data["data"][0]["id"]
+            response = client.get(f"/api/transaction/{transaction_id}")
+            assert response.status_code == 200
+            assert response.json()["id"] == transaction_id
+
+    def test_search_transactions(self, client):
+        """Test searching transactions."""
+        response = client.post(
+            "/api/transaction/transactionResearch/search",
+            json={"client_id": "1556"},
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, (dict, list))
+
+    def test_search_transactions_by_amount(self, client):
+        """Test searching transactions by amount range."""
+        response = client.post(
+            "/api/transaction/transactionResearch/search",
+            json={
+                "min_amount": 100,
+                "max_amount": 500,
+                "page": 1,
+                "limit": 10,
+            },
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "data" in data
+        for transaction in data["data"]:
+            assert 100 <= transaction["amount"] <= 500
+
+    def test_search_transactions_by_use_chip(self, client):
+        """Test searching transactions by use_chip."""
+        response = client.post(
+            "/api/transaction/transactionResearch/search",
+            json={"use_chip": "Swipe Transaction", "page": 1, "limit": 10},
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "data" in data
+        for transaction in data["data"]:
+            assert transaction["use_chip"] == "Swipe Transaction"
+
+    def test_search_transactions_by_merchant_city(self, client):
+        """Test searching transactions by merchant city."""
+        response = client.post(
+            "/api/transaction/transactionResearch/search",
+            json={"merchant_city": "Beulah", "page": 1, "limit": 10},
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "data" in data
+        for transaction in data["data"]:
+            assert transaction["merchant_city"] == "Beulah"
+
+    def test_get_recent_transactions(self, client):
+        """Test getting recent transactions."""
+        response = client.get("/api/transaction/Latest/recent?limit=10")
+        assert response.status_code == 200
+        data = response.json()
+        assert "data" in data
+        assert len(data["data"]) <= 10
+
+    def test_get_transaction_types(self, client):
+        """Test getting transaction types."""
+        response = client.get("/api/transaction/Type/types")
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, list)
+        assert len(data) > 0
+
+
