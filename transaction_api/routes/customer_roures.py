@@ -30,3 +30,20 @@ def get_service() -> CustomerService:
             detail="Repository not initialized",
         )
     return CustomerService(app_context.repository)
+
+
+@router.get("", response_model=PaginatedResponse[CustomerSummary])
+async def get_all_customers(
+    page: int = Query(1, ge=1),
+    limit: int = Query(50, ge=1, le=1000),
+) -> PaginatedResponse[CustomerSummary]:
+    """Get all customers with pagination."""
+    try:
+        service = get_service()
+        return service.get_all_customers(page=page, limit=limit)
+    except Exception as e:
+        logger.error(f"Error getting customers: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error retrieving customers",
+        )
