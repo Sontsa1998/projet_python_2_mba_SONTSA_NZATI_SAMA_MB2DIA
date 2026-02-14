@@ -53,3 +53,17 @@ async def get_amount_distribution() -> AmountDistribution:
             detail="Error retrieving amount distribution",
         )
 
+
+@router.get("/by-type", response_model=list[TypeStats])
+async def get_stats_by_type() -> list[TypeStats]:
+    """Get statistics grouped by transaction type."""
+    try:
+        service = get_service()
+        return service.get_stats_by_type()
+    except Exception as e:
+        logger.error(f"Error getting stats by type: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error retrieving statistics by type",
+        )
+
