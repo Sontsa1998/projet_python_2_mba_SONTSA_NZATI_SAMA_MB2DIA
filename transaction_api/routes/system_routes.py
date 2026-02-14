@@ -34,6 +34,17 @@ async def get_health_status() -> HealthStatus:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error checking system health",
         )
-    
 
-    
+
+@router.get("/metadata", response_model=SystemMetadata)
+async def get_system_metadata() -> SystemMetadata:
+    """Get system metadata."""
+    try:
+        service = get_service()
+        return service.get_metadata()
+    except Exception as e:
+        logger.error(f"Error getting metadata: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error retrieving system metadata",
+        )
