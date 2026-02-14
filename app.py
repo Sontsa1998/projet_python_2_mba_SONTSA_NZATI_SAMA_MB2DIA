@@ -420,3 +420,10 @@ elif page == "Statistiques":
                     df, x="type", y="count", title="Transactions par Type"
                 )
                 st.plotly_chart(fig, use_container_width=True)
+
+# Footer
+st.sidebar.markdown("---")
+st.sidebar.markdown("**Groupe**")
+st.sidebar.markdown("**Christian SONTSA**")
+st.sidebar.markdown("**Stéphane NZATI** ")
+st.sidebar.markdown("**Brenda Camélia Sama**")
