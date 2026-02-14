@@ -132,3 +132,9 @@ async def general_exception_handler(request: Request, exc: Exception):
             "timestamp": datetime.utcnow().isoformat(),
         },
     )
+
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint."""
+    return {"status": "ok"}
