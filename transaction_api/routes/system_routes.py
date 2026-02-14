@@ -22,3 +22,18 @@ def get_service() -> HealthService:
     return HealthService(app_context.repository)
 
 
+@router.get("/health", response_model=HealthStatus)
+async def get_health_status() -> HealthStatus:
+    """Get system health status."""
+    try:
+        service = get_service()
+        return service.check_health()
+    except Exception as e:
+        logger.error(f"Error checking health: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error checking system health",
+        )
+    
+
+    
