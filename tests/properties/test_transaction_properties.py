@@ -29,3 +29,39 @@ def transaction_strategy():
         mcc=st.text(min_size=4, max_size=4),
         errors=st.none() | st.text(min_size=1, max_size=50),
     )
+
+
+@given(
+    st.lists(
+        transaction_strategy(),
+        min_size=1,
+        max_size=100,
+        unique_by=lambda t: t.id,
+    )
+)
+def test_transaction_loading_completeness(transactions):
+    """
+    Property 1: Transaction Loading Completeness.
+
+    For any list of N valid transactions, after loading, the system should
+    contain exactly N transactions accessible via queries.
+
+    **Validates: Requirements 1.1, 1.2**
+    """
+    repo = TransactionRepository()
+    repo.data_load_date = datetime.utcnow()
+
+    # Load transactions
+    for transaction in transactions:
+        repo._add_transaction(transaction)
+
+    # Verify all transactions are loaded
+    loaded_transactions = repo.get_all_transactions()
+    assert len(loaded_transactions) == len(transactions)
+
+    # Verify each transaction can be retrieved by ID
+    for transaction in transactions:
+        retrieved = repo.get_by_id(transaction.id)
+        assert retrieved is not None
+        assert retrieved.id == transaction.id
+    
