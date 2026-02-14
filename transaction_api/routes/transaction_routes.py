@@ -150,3 +150,17 @@ async def get_recent_transactions(
 ) -> PaginatedResponse[Transaction]:
     """Get recent transactions."""
     try:
+        service = get_service()
+        return service.get_recent_transactions(limit=limit)
+    except InvalidPaginationParameters as e:
+        logger.error(f"Invalid limit: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+    except Exception as e:
+        logger.error(f"Error getting recent transactions: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error retrieving recent transactions",
+        )
