@@ -187,3 +187,12 @@ class ErrorResponse(BaseModel):
     timestamp: datetime = Field(..., description="Timestamp")
 
 
+class SearchFilters(BaseModel):
+    """Search filters for transactions."""
+
+    min_amount: Optional[float] = Field(None, description="Min amount")
+    max_amount: Optional[float] = Field(None, description="Max amount")
+    client_id: Optional[str] = Field(None, description="Client id")
+    transaction_id: Optional[str] = Field(None, description="Transaction id")
+    merchant_city: Optional[str] = Field(None, description="Merchant city")
+    use_chip: Optional[str] = Field(None, description="Transaction type")
