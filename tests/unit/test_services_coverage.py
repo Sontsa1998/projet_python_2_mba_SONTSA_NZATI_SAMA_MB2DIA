@@ -38,3 +38,32 @@ class TestCustomerServiceExtended:
         service = CustomerService(repository)
         result = service.get_top_customers(n=5)
         assert len(result) <= 5
+
+class TestFraudServiceExtended:
+    """Extended tests for fraud service."""
+
+    def test_get_fraud_summary(self, repository):
+        """Test getting fraud summary."""
+        service = FraudService(repository)
+        result = service.get_fraud_summary()
+        assert hasattr(result, "total_fraud_count")
+        assert hasattr(result, "fraud_rate")
+
+    def test_get_fraud_by_type(self, repository):
+        """Test getting fraud by type."""
+        service = FraudService(repository)
+        result = service.get_fraud_by_type()
+        assert isinstance(result, list)
+        if result:
+            assert hasattr(result[0], "type")
+            assert hasattr(result[0], "fraud_count")
+
+    def test_predict_fraud(self, repository):
+        """Test fraud prediction."""
+        service = FraudService(repository)
+        transactions = repository.get_all_transactions()
+        if transactions:
+            result = service.predict_fraud(transactions[0])
+            assert hasattr(result, "fraud_score")
+            assert hasattr(result, "reasoning")
+
