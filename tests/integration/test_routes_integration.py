@@ -167,3 +167,26 @@ class TestTransactionRoutes:
         assert len(data) > 0
 
 
+class TestFraudRoutes:
+    """Test fraud routes."""
+
+    def test_get_fraud_transactions(self, client):
+        """Test getting fraud transactions."""
+        response = client.get("/api/fraud/summary")
+        assert response.status_code == 200
+        data = response.json()
+        assert "total_fraud_count" in data or "fraud_rate" in data
+
+    def test_get_fraud_by_type(self, client):
+        """Test getting fraud statistics by use_chip type."""
+        response = client.get("/api/fraud/by-type")
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, list)
+        for item in data:
+            assert "type" in item
+            assert "fraud_count" in item
+            assert "fraud_rate" in item
+            assert "total_count" in item
+
+
