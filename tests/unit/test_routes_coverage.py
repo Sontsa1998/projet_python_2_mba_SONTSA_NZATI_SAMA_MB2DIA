@@ -42,7 +42,7 @@ class TestCustomerRoutesExtended:
         assert len(data) <= 5
 
 
-lass TestTransactionRoutesExtended:
+class TestTransactionRoutesExtended:
     """Extended tests for transaction routes."""
 
     def test_get_transaction_by_id_success(self, client):
@@ -97,6 +97,7 @@ class TestFraudRoutesExtended:
                     json=transaction,
                 )
                 assert response.status_code == 200
+
 
 class TestStatisticsRoutesExtended:
     """Extended tests for statistics routes."""
