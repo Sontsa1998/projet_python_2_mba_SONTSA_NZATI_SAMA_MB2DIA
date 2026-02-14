@@ -67,3 +67,16 @@ async def get_stats_by_type() -> list[TypeStats]:
             detail="Error retrieving statistics by type",
         )
 
+
+@router.get("/daily", response_model=list[dict])
+async def get_daily_stats() -> list[dict]:
+    """Get daily statistics grouped by date."""
+    try:
+        service = get_service()
+        return service.get_daily_stats()
+    except Exception as e:
+        logger.error(f"Error getting daily stats: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error retrieving daily statistics",
+        )
