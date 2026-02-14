@@ -73,4 +73,44 @@ class TransactionRepository:
             logger.error(f"Error loading CSV file: {e}")
             raise
 
+    def _parse_transaction(self, row: Dict[str, str]) -> Transaction:
+        """Parse a transaction from a CSV row."""
+        try:
+            # Get date string and handle empty values
+            date_str = row.get("date", "").strip()
+            if not date_str:
+                raise ValueError("Date is empty")
+
+            date_obj = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+
+            # Parse amount - remove $ if present
+            amount_str = row.get("amount", "0").strip()
+            if amount_str.startswith("$"):
+                amount_str = amount_str[1:]
+            amount = float(amount_str)
+            use_chip = row.get("use_chip", "").strip()
+
+            # Get ID and handle empty values
+            transaction_id = row.get("id", "").strip()
+            if not transaction_id:
+                raise ValueError("Transaction ID is empty")
+
+            transaction = Transaction(
+                id=transaction_id,
+                date=date_obj,
+                client_id=row.get("client_id", "").strip(),
+                card_id=row.get("card_id", "").strip(),
+                amount=amount,
+                use_chip=use_chip,
+                merchant_id=row.get("merchant_id", "").strip(),
+                merchant_city=row.get("merchant_city", "").strip(),
+                merchant_state=row.get("merchant_state", "").strip(),
+                zip=row.get("zip", "").strip(),
+                mcc=row.get("mcc", "").strip(),
+                errors=row.get("errors", "").strip() or None,
+            )
+            return transaction
+        except (ValueError, KeyError) as e:
+            raise InvalidTransactionData(f"Invalid transaction data: {e}")
+        
     
