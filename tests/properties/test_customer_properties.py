@@ -72,3 +72,55 @@ def test_customer_list_completeness(transactions):
             [t for t in transactions if t.client_id == customer.customer_id]
         )
         assert customer.transaction_count == expected_count
+
+
+@given(
+    st.lists(
+        transaction_strategy(),
+        min_size=1,
+        max_size=100,
+        unique_by=lambda t: t.id,
+    )
+)
+def test_customer_details_accuracy(transactions):
+    """
+    Property 17: Customer Details Accuracy.
+
+    For any customer_id, the returned customer details should have
+    transaction_count equal to the number of transactions for that customer,
+    and average_amount should equal total_amount divided by transaction_count.
+
+    **Validates: Requirements 17.1, 17.2**
+    """
+    repo = TransactionRepository()
+    repo.data_load_date = datetime.utcnow()
+    service = CustomerService(repo)
+
+    # Load transactions
+    for transaction in transactions:
+        repo._add_transaction(transaction)
+
+    # Get all unique customer IDs
+    unique_customer_ids = set(t.client_id for t in transactions)
+
+    # For each customer, verify details accuracy
+    for customer_id in unique_customer_ids:
+        customer = service.get_customer_details(customer_id)
+
+        # Verify transaction count
+        expected_count = len(
+            [t for t in transactions if t.client_id == customer_id]
+        )
+        assert customer.transaction_count == expected_count
+
+        # Verify total amount
+        expected_total = sum(
+            t.amount for t in transactions if t.client_id == customer_id
+        )
+        assert abs(customer.total_amount - expected_total) < 0.01
+
+        # Verify average amount
+        expected_average = (
+            expected_total / expected_count if expected_count > 0 else 0.0
+        )
+        assert abs(customer.average_amount - expected_average) < 0.01
