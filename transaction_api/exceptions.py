@@ -10,3 +10,8 @@ class TransactionNotFound(TransactionAPIException):
     """Exception raised when a transaction is not found."""
 
     pass
+
+class CustomerNotFound(TransactionAPIException):
+    """Exception raised when a customer is not found."""
+
+    pass
