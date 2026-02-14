@@ -67,3 +67,33 @@ class TestFraudServiceExtended:
             assert hasattr(result, "fraud_score")
             assert hasattr(result, "reasoning")
 
+
+class TestStatisticsServiceExtended:
+    """Extended tests for statistics service."""
+
+    def test_get_overview_stats(self, repository):
+        """Test getting overview statistics."""
+        service = StatisticsService(repository)
+        result = service.get_overview_stats()
+        assert hasattr(result, "total_count")
+        assert hasattr(result, "total_amount")
+
+    def test_get_amount_distribution(self, repository):
+        """Test getting amount distribution."""
+        service = StatisticsService(repository)
+        result = service.get_amount_distribution()
+        assert hasattr(result, "buckets")
+        assert isinstance(result.buckets, list)
+
+    def test_get_stats_by_type(self, repository):
+        """Test getting statistics by type."""
+        service = StatisticsService(repository)
+        result = service.get_stats_by_type()
+        assert isinstance(result, list)
+
+    def test_get_daily_stats(self, repository):
+        """Test getting daily statistics."""
+        service = StatisticsService(repository)
+        result = service.get_daily_stats()
+        assert isinstance(result, list)
+
