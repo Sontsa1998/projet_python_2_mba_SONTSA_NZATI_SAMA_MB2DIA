@@ -113,4 +113,21 @@ class TransactionRepository:
         except (ValueError, KeyError) as e:
             raise InvalidTransactionData(f"Invalid transaction data: {e}")
         
+    def _add_transaction(self, transaction: Transaction) -> None:
+        """Add a transaction to the repository."""
+        self.transactions[transaction.id] = transaction
+        self.customer_index[transaction.client_id].append(transaction.id)
+        self.merchant_index[transaction.merchant_id].append(transaction.id)
+        self.type_index[transaction.mcc].append(transaction.id)
+        self.use_chip_index[transaction.use_chip].append(transaction.id)
+        self.date_index.append(transaction.id)
+
+        if transaction.errors:
+            self.fraud_index.append(transaction.id)
+
+        if self.min_date is None or transaction.date < self.min_date:
+            self.min_date = transaction.date
+        if self.max_date is None or transaction.date > self.max_date:
+            self.max_date = transaction.date
+
     
