@@ -102,3 +102,20 @@ class TransactionService:
         # Sort by count descending
         type_stats.sort(key=lambda x: x["count"], reverse=True)  # type: ignore
         return type_stats
+    
+    def get_recent_transactions(
+        self, limit: int = 50
+    ) -> PaginatedResponse[Transaction]:
+        """Get recent transactions."""
+        try:
+            _, limit = PaginationService.validate_pagination_params(1, limit)
+        except InvalidPaginationParameters as e:
+            logger.error(f"Invalid limit: {e}")
+            raise
+
+        transactions, total_count = self.repository.get_all(
+            page=1, limit=limit
+        )
+        return PaginationService.create_paginated_response(
+            transactions, 1, limit, total_count
+        )
