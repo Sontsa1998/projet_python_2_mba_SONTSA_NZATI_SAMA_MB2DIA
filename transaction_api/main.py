@@ -1,0 +1,61 @@
+"""Main FastAPI application."""
+
+from contextlib import asynccontextmanager
+from datetime import datetime
+
+from fastapi import FastAPI, Request, status
+from fastapi.responses import JSONResponse
+
+from transaction_api import app_context
+from transaction_api.config import API_DESCRIPTION, API_TITLE, API_VERSION
+from transaction_api.exceptions import (
+    CustomerNotFound,
+    InvalidPaginationParameters,
+    InvalidSearchFilters,
+    TransactionNotFound,
+)
+from transaction_api.logging_config import get_logger, setup_logging
+from transaction_api.repository import TransactionRepository
+from transaction_api.routes import (
+    transaction_routes as transaction_routes_mod,
+    statistics_routes as statistics_routes_mod,
+    fraud_routes as fraud_routes_mod,
+    customer_routes as customer_routes_mod,
+    system_routes as system_routes_mod,
+)
+
+transaction_router = transaction_routes_mod.router
+statistics_router = statistics_routes_mod.router
+fraud_router = fraud_routes_mod.router
+customer_router = customer_routes_mod.router
+system_router = system_routes_mod.router
+
+# Set up logging
+setup_logging()
+logger = get_logger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan context manager for FastAPI app."""
+    logger.info("Starting Transaction API")
+    app_context.repository = TransactionRepository()
+    try:
+        logger.info("Loading transaction data from CSV")
+        app_context.repository.load_from_csv()
+        total_transactions = len(app_context.repository.get_all_transactions())
+        logger.info(f"Successfully loaded {total_transactions} transactions")
+    except Exception as e:
+        logger.error(f"Failed to load transaction data: {e}")
+        raise
+    yield
+    logger.info("Shutting down Transaction API")
+
+
+# Create FastAPI app
+app = FastAPI(
+    title=API_TITLE,
+    description=API_DESCRIPTION,
+    version=API_VERSION,
+    lifespan=lifespan,
+)
