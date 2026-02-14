@@ -235,3 +235,89 @@ elif page == "Clients":
                 )
                 st.plotly_chart(fig, use_container_width=True)
 
+# Transactions Page
+elif page == "Transactions":
+    st.title("💳 Transactions")
+
+    tab1, tab2 = st.tabs(["Liste des Transactions", "Recherche Avancée"])
+
+    with tab1:
+        st.subheader("Liste Paginée des Transactions")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            limit = st.selectbox(
+                "Éléments par page", [10, 25, 50], key="transaction_limit"
+            )
+
+        transactions_data = get_data(
+            "/transaction",
+            params={"page": st.session_state.transaction_page, "limit": limit},
+        )
+
+        if transactions_data:
+            if (
+                isinstance(transactions_data, dict)
+                and "data" in transactions_data
+            ):
+                df = pd.DataFrame(transactions_data["data"])
+                st.dataframe(df, use_container_width=True)
+
+                # Pagination
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    if st.button("⬅️ Précédent", key="prev_transaction"):
+                        if st.session_state.transaction_page > 1:
+                            st.session_state.transaction_page -= 1
+                            st.rerun()
+
+                with col2:
+                    st.write(f"Page {st.session_state.transaction_page}")
+
+                with col3:
+                    if st.button("Suivant ➡️", key="next_transaction"):
+                        st.session_state.transaction_page += 1
+                        st.rerun()
+
+    with tab2:
+        st.subheader("Recherche Multi-Critères")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            client_id = st.text_input("ID Client (optionnel)")
+            min_amount = st.number_input("Montant Minimum", value=0.0)
+
+        with col2:
+            use_chip = st.selectbox(
+                "Type de Transaction",
+                [
+                    "",
+                    "Swipe Transaction",
+                    "Online Transaction",
+                    "Chip Transaction",
+                ],
+            )
+            max_amount = st.number_input("Montant Maximum", value=10000.0)
+
+        if st.button("Rechercher"):
+            search_data = {}
+            if client_id:
+                search_data["client_id"] = client_id
+            if min_amount > 0:
+                search_data["min_amount"] = min_amount
+            if max_amount > 0:
+                search_data["max_amount"] = max_amount
+            if use_chip:
+                search_data["use_chip"] = use_chip
+
+            results = post_data(
+                "/transaction/transactionResearch/search", search_data
+            )
+            if results:
+                if isinstance(results, dict) and "data" in results:
+                    df = pd.DataFrame(results["data"])
+                    st.dataframe(df, use_container_width=True)
+                    st.write(
+                        f"Total: {results.get('total_count', 0)} transactions"
+                    )
+
