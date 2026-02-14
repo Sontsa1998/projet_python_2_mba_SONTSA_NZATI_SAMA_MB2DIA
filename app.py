@@ -366,3 +366,57 @@ elif page == "Fraude":
                     title="Fraudes par Type de Transaction",
                 )
                 st.plotly_chart(fig, use_container_width=True)
+
+# Statistiques Page
+elif page == "Statistiques":
+    st.title("📊 Statistiques Avancées")
+
+    tab1, tab2, tab3 = st.tabs(
+        [
+            "Statistiques Quotidiennes",
+            "Distribution des Montants",
+            "Statistiques par Type",
+        ]
+    )
+
+    with tab1:
+        st.subheader("Statistiques Quotidiennes")
+
+        daily_stats = get_data("/stats/daily")
+        if daily_stats:
+            df = pd.DataFrame(daily_stats)
+            st.dataframe(df, use_container_width=True)
+
+            if not df.empty:
+                fig = px.line(
+                    df, x="date", y="count", title="Transactions par Jour"
+                )
+                st.plotly_chart(fig, use_container_width=True)
+
+    with tab2:
+        st.subheader("Distribution des Montants")
+
+        amount_dist = get_data("/stats/amount-distribution")
+        if amount_dist and "buckets" in amount_dist:
+            df = pd.DataFrame(amount_dist["buckets"])
+            st.dataframe(df, use_container_width=True)
+
+            if not df.empty:
+                fig = px.bar(
+                    df, x="range", y="count", title="Distribution des Montants"
+                )
+                st.plotly_chart(fig, use_container_width=True)
+
+    with tab3:
+        st.subheader("Statistiques par Type de Transaction")
+
+        type_stats = get_data("/stats/by-type")
+        if type_stats:
+            df = pd.DataFrame(type_stats)
+            st.dataframe(df, use_container_width=True)
+
+            if not df.empty:
+                fig = px.bar(
+                    df, x="type", y="count", title="Transactions par Type"
+                )
+                st.plotly_chart(fig, use_container_width=True)
