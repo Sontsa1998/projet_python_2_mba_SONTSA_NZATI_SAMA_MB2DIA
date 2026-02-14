@@ -1,1 +1,5 @@
 data/
+.venv/
+__pycache__/
+transaction_api/__pycache__/
+transaction_api.log
