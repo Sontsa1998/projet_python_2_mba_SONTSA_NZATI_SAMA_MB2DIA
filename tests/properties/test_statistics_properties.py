@@ -29,3 +29,46 @@ def transaction_strategy():
         mcc=st.text(min_size=4, max_size=4),
         errors=st.none() | st.text(min_size=1, max_size=50),
     )
+
+
+@given(
+    st.lists(
+        transaction_strategy(),
+        min_size=1,
+        max_size=100,
+        unique_by=lambda t: t.id,
+    )
+)
+def test_statistics_aggregation_correctness(transactions):
+    """
+    Property 9: Statistics Aggregation Correctness.
+
+    For any overview statistics query, the total_amount should equal the sum
+    of all transaction amounts, and average_amount should equal total_amount
+    divided by total_count.
+
+    **Validates: Requirements 9.1, 9.2**
+    """
+    repo = TransactionRepository()
+    repo.data_load_date = datetime.utcnow()
+    service = StatisticsService(repo)
+
+    # Load transactions
+    for transaction in transactions:
+        repo._add_transaction(transaction)
+
+    # Get overview stats
+    stats = service.get_overview_stats()
+
+    # Verify total count
+    assert stats.total_count == len(transactions)
+
+    # Verify total amount
+    expected_total = sum(t.amount for t in transactions)
+    assert abs(stats.total_amount - expected_total) < 0.01
+
+    # Verify average amount
+    expected_average = (
+        expected_total / len(transactions) if transactions else 0.0
+    )
+    assert abs(stats.average_amount - expected_average) < 0.01
