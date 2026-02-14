@@ -164,3 +164,31 @@ async def get_recent_transactions(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error retrieving recent transactions",
         )
+
+@router.get(
+    "/by-customer/{customer_id}",
+    response_model=PaginatedResponse[Transaction],
+)
+async def get_customer_transactions(
+    customer_id: str,
+    page: int = Query(1, ge=1),
+    limit: int = Query(50, ge=1, le=1000),
+) -> PaginatedResponse[Transaction]:
+    """Get transactions for a customer."""
+    try:
+        service = get_service()
+        return service.get_customer_transactions(
+            customer_id=customer_id, page=page, limit=limit
+        )
+    except InvalidPaginationParameters as e:
+        logger.error(f"Invalid pagination parameters: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+    except Exception as e:
+        logger.error(f"Error getting customer transactions: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error retrieving customer transactions",
+        )
