@@ -67,10 +67,13 @@ class FraudService:
                    # Sort by fraud rate descending
         fraud_stats.sort(key=lambda x: x.fraud_rate, reverse=True)
         return fraud_stats
- def predict_fraud(self, transaction: Transaction) -> FraudPrediction:
+     def predict_fraud(self, transaction: Transaction) -> FraudPrediction:
         """Predict fraud risk for a transaction."""
         score = self._calculate_fraud_score(transaction)
         reasoning = self._generate_reasoning(transaction, score)
 
         return FraudPrediction(fraud_score=score, reasoning=reasoning)
 
+    def _calculate_fraud_score(self, transaction: Transaction) -> float:
+        """Calculate fraud score for a transaction."""
+        score = 0.0
