@@ -46,3 +46,20 @@ class Transaction(BaseModel):
         }
 
 
+class PaginationMetadata(BaseModel):
+    """Pagination metadata."""
+
+    page: int = Field(..., description="Current page number")
+    limit: int = Field(..., description="Items per page")
+    total_count: int = Field(..., description="Total items")
+    total_pages: int = Field(..., description="Total pages")
+    has_next_page: bool = Field(..., description="Has next page")
+
+
+class PaginatedResponse(BaseModel, Generic[T]):
+    """Generic paginated response."""
+
+    data: List[T] = Field(..., description="List of items")
+    pagination: PaginationMetadata = Field(..., description="Pagination info")
+
+
