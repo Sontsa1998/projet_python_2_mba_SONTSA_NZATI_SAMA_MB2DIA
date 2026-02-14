@@ -74,3 +74,16 @@ async def transaction_not_found_handler(
             "timestamp": datetime.utcnow().isoformat(),
         },
     )
+
+
+@app.exception_handler(CustomerNotFound)
+async def customer_not_found_handler(request: Request, exc: CustomerNotFound):
+    """Handle CustomerNotFound exception."""
+    return JSONResponse(
+        status_code=status.HTTP_404_NOT_FOUND,
+        content={
+            "error": "Customer not found",
+            "details": str(exc),
+            "timestamp": datetime.utcnow().isoformat(),
+        },
+    )
