@@ -233,4 +233,22 @@ class TransactionRepository:
 
         return paginated_results, total_count
 
+     def delete(self, transaction_id: str) -> None:
+        """Delete a transaction."""
+        if transaction_id not in self.transactions:
+            return
+
+        transaction = self.transactions[transaction_id]
+
+        # Remove from all indexes
+        del self.transactions[transaction_id]
+        self.customer_index[transaction.client_id].remove(transaction_id)
+        self.merchant_index[transaction.merchant_id].remove(transaction_id)
+        self.type_index[transaction.mcc].remove(transaction_id)
+        self.use_chip_index[transaction.use_chip].remove(transaction_id)
+        self.date_index.remove(transaction_id)
+
+        if transaction.errors:
+            self.fraud_index.remove(transaction_id)
+
     
