@@ -112,7 +112,7 @@ class TransactionRepository:
             return transaction
         except (ValueError, KeyError) as e:
             raise InvalidTransactionData(f"Invalid transaction data: {e}")
-        
+
     def _add_transaction(self, transaction: Transaction) -> None:
         """Add a transaction to the repository."""
         self.transactions[transaction.id] = transaction
@@ -156,7 +156,7 @@ class TransactionRepository:
     def get_by_id(self, transaction_id: str) -> Optional[Transaction]:
         """Get a transaction by ID."""
         return self.transactions.get(transaction_id)
-    
+
     def search(
         self, filters: SearchFilters, page: int = 1, limit: int = 50
     ) -> Tuple[List[Transaction], int]:
@@ -233,7 +233,7 @@ class TransactionRepository:
 
         return paginated_results, total_count
 
-     def delete(self, transaction_id: str) -> None:
+    def delete(self, transaction_id: str) -> None:
         """Delete a transaction."""
         if transaction_id not in self.transactions:
             return
