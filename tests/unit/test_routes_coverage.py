@@ -42,3 +42,43 @@ class TestCustomerRoutesExtended:
         assert len(data) <= 5
 
 
+lass TestTransactionRoutesExtended:
+    """Extended tests for transaction routes."""
+
+    def test_get_transaction_by_id_success(self, client):
+        """Test getting transaction by ID."""
+        response = client.get("/api/transaction?page=1&limit=1")
+        assert response.status_code == 200
+        data = response.json()
+        if data.get("data"):
+            transaction_id = data["data"][0]["id"]
+            response = client.get(f"/api/transaction/{transaction_id}")
+            assert response.status_code == 200
+
+    def test_search_transactions_with_multiple_filters(self, client):
+        """Test searching transactions with multiple filters."""
+        response = client.post(
+            "/api/transaction/transactionResearch/search",
+            json={
+                "min_amount": 50,
+                "max_amount": 1000,
+                "use_chip": "Swipe Transaction",
+            },
+        )
+        assert response.status_code == 200
+
+    def test_get_customer_transactions(self, client):
+        """Test getting transactions for a customer."""
+        response = client.get(
+            "/api/transaction/by-customer/1556?page=1&limit=10"
+        )
+        assert response.status_code == 200
+
+    def test_get_merchant_transactions(self, client):
+        """Test getting merchant transactions."""
+        response = client.get(
+            "/api/transaction/to-customer/1556?page=1&limit=10"
+        )
+        assert response.status_code == 200
+
+
