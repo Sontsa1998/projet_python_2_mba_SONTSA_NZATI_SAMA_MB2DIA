@@ -33,3 +33,13 @@ class TransactionService:
             page, limit = PaginationService.validate_pagination_params(
                 page, limit
             )
+        except InvalidPaginationParameters as e:
+            logger.error(f"Invalid pagination parameters: {e}")
+            raise
+
+        transactions, total_count = self.repository.get_all(
+            page=page, limit=limit
+        )
+        return PaginationService.create_paginated_response(
+            transactions, page, limit, total_count
+        )
