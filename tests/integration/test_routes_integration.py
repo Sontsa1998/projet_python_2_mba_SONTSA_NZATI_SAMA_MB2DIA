@@ -190,3 +190,30 @@ class TestFraudRoutes:
             assert "total_count" in item
 
 
+class TestStatisticsRoutes:
+    """Test statistics routes."""
+
+    def test_get_daily_statistics(self, client):
+        """Test getting daily statistics."""
+        response = client.get("/api/stats/daily")
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, list)
+        for stat in data:
+            assert "date" in stat or "count" in stat
+
+    def test_get_customer_statistics(self, client):
+        """Test getting customer statistics."""
+        response = client.get("/api/stats/overview")
+        assert response.status_code == 200
+        data = response.json()
+        assert "total_transactions" in data or "total_amount" in data
+
+    def test_get_transaction_statistics(self, client):
+        """Test getting transaction statistics."""
+        response = client.get("/api/stats/overview")
+        assert response.status_code == 200
+        data = response.json()
+        assert "total_transactions" in data or "total_amount" in data
+
+
