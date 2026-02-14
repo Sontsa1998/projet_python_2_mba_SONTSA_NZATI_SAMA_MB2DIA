@@ -19,3 +19,9 @@ from transaction_api.models import (
     SearchFilters,
     Transaction,
 )
+
+from transaction_api.services.transaction_service import TransactionService
+
+logger = get_logger(__name__)
+
+router: APIRouter = APIRouter(prefix="/api/transaction", tags=["transactions"])
