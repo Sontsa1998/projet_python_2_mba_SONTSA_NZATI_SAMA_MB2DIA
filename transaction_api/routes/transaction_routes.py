@@ -57,3 +57,22 @@ async def get_all_transactions(
             detail="Error retrieving transactions",
         )
 
+
+@router.get("/{transaction_id}", response_model=Transaction)
+async def get_transaction(transaction_id: str) -> Transaction:
+    """Get a transaction by ID."""
+    try:
+        service = get_service()
+        return service.get_transaction_by_id(transaction_id)
+    except TransactionNotFound as e:
+        logger.warning(f"Transaction not found: {transaction_id}")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+    except Exception as e:
+        logger.error(f"Error getting transaction: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error retrieving transaction",
+        )
