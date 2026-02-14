@@ -12,3 +12,13 @@ logger = get_logger(__name__)
 router: APIRouter = APIRouter(prefix="/api/system", tags=["system"])
 
 
+def get_service() -> HealthService:
+    """Get health service instance."""
+    if app_context.repository is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Repository not initialized",
+        )
+    return HealthService(app_context.repository)
+
+
