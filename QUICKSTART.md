@@ -77,3 +77,25 @@ pytest --cov=transaction_api --cov-report=html
 pytest tests/integration/ -v
 pytest tests/unit/ -v
 ```
+
+## 📁 Structure des Fichiers Importants
+
+```
+├── app.py                    # Application Streamlit
+├── requirements.txt          # Dépendances Python
+├── README.md                 # Documentation complète
+├── QUICKSTART.md            # Ce fichier
+├── start.sh                 # Script de démarrage (Linux/Mac)
+├── start.bat                # Script de démarrage (Windows)
+├── transaction_api/
+│   ├── main.py              # Application FastAPI
+│   ├── repository.py        # Accès aux données
+│   ├── routes/              # Endpoints API
+│   └── services/            # Logique métier
+├── tests/                   # Tests
+│   ├── integration/
+│   ├── unit/
+│   └── properties/
+└── data/
+    └── transactions.csv     # Données
+```
