@@ -37,3 +37,26 @@ class HealthService:
                 status="unhealthy",
                 response_time_ms=response_time_ms,
             )
+    
+    def get_metadata(self) -> SystemMetadata:
+        """Get system metadata."""
+        transactions = self.repository.get_all_transactions()
+        total_count = len(transactions)
+
+        if transactions:
+            min_date = min(t.date for t in transactions)
+            max_date = max(t.date for t in transactions)
+        else:
+            now = datetime.utcnow()
+            min_date = now
+            max_date = now
+
+        data_load_date = self.repository.data_load_date or datetime.utcnow()
+
+        return SystemMetadata(
+            total_transaction_count=total_count,
+            data_load_date=data_load_date,
+            api_version=API_VERSION,
+            min_date=min_date,
+            max_date=max_date,
+        )
