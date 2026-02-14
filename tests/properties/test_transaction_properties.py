@@ -64,4 +64,36 @@ def test_transaction_loading_completeness(transactions):
         retrieved = repo.get_by_id(transaction.id)
         assert retrieved is not None
         assert retrieved.id == transaction.id
-    
+
+
+@given(
+    st.lists(
+        transaction_strategy(),
+        min_size=1,
+        max_size=100,
+        unique_by=lambda t: t.id,
+    )
+)
+def test_transaction_retrieval_accuracy(transactions):
+    """
+    Property 2: Transaction Retrieval Accuracy.
+
+    For any transaction ID that exists in the system, querying by that ID
+    should return the exact transaction that was loaded.
+
+    **Validates: Requirements 2.2**
+    """
+    repo = TransactionRepository()
+    repo.data_load_date = datetime.utcnow()
+
+    # Load transactions
+    for transaction in transactions:
+        repo._add_transaction(transaction)
+
+    # Verify retrieval accuracy
+    for transaction in transactions:
+        retrieved = repo.get_by_id(transaction.id)
+        assert retrieved == transaction
+        assert retrieved.date == transaction.date
+        assert retrieved.amount == transaction.amount
+        assert retrieved.client_id == transaction.client_id
