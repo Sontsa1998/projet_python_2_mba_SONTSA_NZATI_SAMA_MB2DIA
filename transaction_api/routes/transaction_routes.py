@@ -129,3 +129,14 @@ async def search_transactions(
     "/Type/types",
     response_model=list[dict],
 )
+async def get_transaction_types() -> list[dict]:
+    """Get all transaction types with counts."""
+    try:
+        service = get_service()
+        return service.get_transaction_types()
+    except Exception as e:
+        logger.error(f"Error getting transaction types: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error retrieving transaction types",
+        )
