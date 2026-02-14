@@ -15,3 +15,8 @@ class CustomerNotFound(TransactionAPIException):
     """Exception raised when a customer is not found."""
 
     pass
+
+class InvalidPaginationParameters(TransactionAPIException):
+    """Exception raised when pagination parameters are invalid."""
+
+    pass
