@@ -84,3 +84,8 @@ class TransactionService:
 
         self.repository.delete(transaction_id)
         logger.info(f"Deleted transaction: {transaction_id}")
+
+    def get_transaction_types(self) -> List[dict]:
+        """Get all transaction types (use_chip) with counts."""
+        use_chip_types = self.repository.get_all_use_chip_types()
+        type_stats: List[dict] = []
