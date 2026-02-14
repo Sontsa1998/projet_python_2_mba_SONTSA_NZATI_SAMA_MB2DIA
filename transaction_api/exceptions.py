@@ -20,3 +20,8 @@ class InvalidPaginationParameters(TransactionAPIException):
     """Exception raised when pagination parameters are invalid."""
 
     pass
+
+class InvalidSearchFilters(TransactionAPIException):
+    """Exception raised when search filters are invalid."""
+
+    pass
