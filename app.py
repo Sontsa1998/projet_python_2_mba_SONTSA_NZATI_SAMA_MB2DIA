@@ -64,3 +64,19 @@ def get_data(endpoint, params=None):
     except Exception as e:
         st.error(f"Erreur de connexion: {str(e)}")
         return None
+
+
+def post_data(endpoint, data):
+    """Post data to API."""
+    try:
+        response = requests.post(
+            f"{API_BASE_URL}{endpoint}", json=data, timeout=10
+        )
+        if response.status_code == 200:
+            return response.json()
+        else:
+            st.error(f"Erreur API: {response.status_code}")
+            return None
+    except Exception as e:
+        st.error(f"Erreur de connexion: {str(e)}")
+        return None
