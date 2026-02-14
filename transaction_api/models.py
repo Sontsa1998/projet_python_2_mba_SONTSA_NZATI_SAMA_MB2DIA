@@ -105,3 +105,36 @@ class DailyStats(BaseModel):
     average_amount: float = Field(..., description="Average amount")
 
 
+class FraudSummary(BaseModel):
+    """Fraud detection summary."""
+
+    total_fraud_count: int = Field(..., description="Fraud count")
+    fraud_rate: float = Field(..., description="Fraud rate")
+    total_fraud_amount: float = Field(..., description="Fraud amount")
+
+
+class FraudTypeStats(BaseModel):
+    """Fraud statistics by type."""
+
+    type: str = Field(..., description="Transaction type")
+    fraud_count: int = Field(..., description="Fraud count")
+    fraud_rate: float = Field(..., description="Fraud rate")
+    total_count: int = Field(..., description="Total count")
+
+
+class FraudUseChipStats(BaseModel):
+    """Fraud statistics by use_chip type."""
+
+    use_chip: str = Field(..., description="use_chip type")
+    fraud_count: int = Field(..., description="Fraud count")
+    fraud_rate: float = Field(..., description="Fraud rate")
+    total_count: int = Field(..., description="Total count")
+
+
+class FraudPrediction(BaseModel):
+    """Fraud prediction result."""
+
+    fraud_score: float = Field(..., ge=0.0, le=1.0, description="Fraud score")
+    reasoning: str = Field(..., description="Reasoning")
+
+
