@@ -64,3 +64,42 @@ def test_health_check_consistency(transactions):
 
     # Verify response time is positive
     assert health.response_time_ms >= 0
+
+
+@given(
+    st.lists(
+        transaction_strategy(),
+        min_size=1,
+        max_size=100,
+        unique_by=lambda t: t.id,
+    )
+)
+def test_metadata_accuracy(transactions):
+    """
+    Property 20: Metadata Accuracy.
+
+    For any metadata query, the total_transaction_count should equal the actual
+    number of transactions in the system, and min_date should be less than or
+    equal to max_date.
+
+    **Validates: Requirements 20.1, 20.2, 20.3**
+    """
+    repo = TransactionRepository()
+    repo.data_load_date = datetime.utcnow()
+    service = HealthService(repo)
+
+    # Load transactions
+    for transaction in transactions:
+        repo._add_transaction(transaction)
+
+    # Get metadata
+    metadata = service.get_metadata()
+
+    # Verify total count
+    assert metadata.total_transaction_count == len(transactions)
+
+    # Verify date range
+    assert metadata.min_date <= metadata.max_date
+
+    # Verify API version is set
+    assert len(metadata.api_version) > 0
