@@ -130,4 +130,31 @@ class TransactionRepository:
         if self.max_date is None or transaction.date > self.max_date:
             self.max_date = transaction.date
 
+    def get_all_transactions(self) -> List[Transaction]:
+        """Get all transactions."""
+        return list(self.transactions.values())
+
+    def get_all(
+        self, page: int = 1, limit: int = 50
+    ) -> Tuple[List[Transaction], int]:
+        """Get paginated transactions."""
+        if page < 1:
+            page = 1
+        if limit < 1 or limit > 1000:
+            limit = 50
+
+        offset = (page - 1) * limit
+        all_transactions = sorted(
+            self.transactions.values(),
+            key=lambda t: t.date,
+            reverse=True,
+        )
+        total_count = len(all_transactions)
+        transactions = all_transactions[offset: offset + limit]
+        return transactions, total_count
+
+    def get_by_id(self, transaction_id: str) -> Optional[Transaction]:
+        """Get a transaction by ID."""
+        return self.transactions.get(transaction_id)
+    
     
