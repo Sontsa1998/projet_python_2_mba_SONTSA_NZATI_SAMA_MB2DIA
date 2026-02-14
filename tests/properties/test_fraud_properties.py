@@ -125,3 +125,27 @@ def test_fraud_type_statistics_accuracy(transactions):
     # Verify sorted by fraud rate descending
     fraud_rates = [t.fraud_rate for t in fraud_stats]
     assert fraud_rates == sorted(fraud_rates, reverse=True)
+
+
+@given(transaction_strategy())
+def test_fraud_prediction_score_range(transaction):
+    """
+    Property 15: Fraud Prediction Score Range.
+
+    For any fraud prediction query, the returned fraud_score should be between
+    0.0 and 1.0 (inclusive), and the reasoning field should be non-empty.
+
+    **Validates: Requirements 15.1, 15.2, 15.3**
+    """
+    repo = TransactionRepository()
+    repo.data_load_date = datetime.utcnow()
+    service = FraudService(repo)
+
+    # Predict fraud
+    prediction = service.predict_fraud(transaction)
+
+    # Verify score is in range
+    assert 0.0 <= prediction.fraud_score <= 1.0
+
+    # Verify reasoning is non-empty
+    assert len(prediction.reasoning) > 0
