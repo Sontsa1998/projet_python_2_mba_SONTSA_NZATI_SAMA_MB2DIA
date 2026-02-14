@@ -162,3 +162,21 @@ class CustomerSummary(BaseModel):
     transaction_count: int = Field(..., description="Transaction count")
 
 
+class HealthStatus(BaseModel):
+    """System health status."""
+
+    status: str = Field(..., description="Health status")
+    response_time_ms: float = Field(..., description="Response time ms")
+
+
+class SystemMetadata(BaseModel):
+    """System metadata."""
+
+    total_transaction_count: int = Field(..., description="Total transactions")
+    data_load_date: datetime = Field(..., description="Data load date")
+    api_version: str = Field(..., description="API version")
+    min_date: datetime = Field(..., description="Earliest date")
+    max_date: datetime = Field(..., description="Latest date")
+
+
+    
