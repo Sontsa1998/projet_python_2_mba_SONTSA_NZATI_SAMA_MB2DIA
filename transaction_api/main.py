@@ -87,3 +87,19 @@ async def customer_not_found_handler(request: Request, exc: CustomerNotFound):
             "timestamp": datetime.utcnow().isoformat(),
         },
     )
+
+
+@app.exception_handler(InvalidPaginationParameters)
+async def invalid_pagination_handler(
+    request: Request,
+    exc: InvalidPaginationParameters,
+):
+    """Handle InvalidPaginationParameters exception."""
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={
+            "error": "Invalid pagination parameters",
+            "details": str(exc),
+            "timestamp": datetime.utcnow().isoformat(),
+        },
+    )
