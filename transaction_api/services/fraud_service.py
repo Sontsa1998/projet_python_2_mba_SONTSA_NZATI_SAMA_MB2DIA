@@ -39,3 +39,7 @@ class FraudService:
             fraud_rate=fraud_rate,
             total_fraud_amount=total_fraud_amount,
         )
+    def get_fraud_by_type(self) -> List[FraudTypeStats]:
+        """Get fraud statistics grouped by use_chip type."""
+        use_chip_types = self.repository.get_all_use_chip_types()
+        fraud_stats = []
