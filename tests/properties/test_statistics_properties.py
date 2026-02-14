@@ -72,3 +72,41 @@ def test_statistics_aggregation_correctness(transactions):
         expected_total / len(transactions) if transactions else 0.0
     )
     assert abs(stats.average_amount - expected_average) < 0.01
+
+
+@given(
+    st.lists(
+        transaction_strategy(),
+        min_size=1,
+        max_size=100,
+        unique_by=lambda t: t.id,
+    )
+)
+def test_amount_distribution_completeness(transactions):
+    """
+    Property 10: Amount Distribution Completeness.
+
+    For any amount distribution query, the sum of all bucket counts should
+    equal the total transaction count, and all transactions should fall into
+    exactly one bucket.
+
+    **Validates: Requirements 10.1, 10.2, 10.3**
+    """
+    repo = TransactionRepository()
+    repo.data_load_date = datetime.utcnow()
+    service = StatisticsService(repo)
+
+    # Load transactions
+    for transaction in transactions:
+        repo._add_transaction(transaction)
+
+    # Get amount distribution
+    distribution = service.get_amount_distribution()
+
+    # Verify sum of counts equals total
+    total_count = sum(b.count for b in distribution.buckets)
+    assert total_count == len(transactions)
+
+    # Verify percentages sum to 100 (approximately)
+    total_percentage = sum(b.percentage for b in distribution.buckets)
+    assert abs(total_percentage - 100.0) < 0.1 or len(transactions) == 0
