@@ -21,3 +21,21 @@ class PaginationService(Generic[T]):
                 f"Limit must be between {MIN_LIMIT} and {MAX_LIMIT}"
             )
         return page, limit
+
+    @staticmethod
+    def create_paginated_response(
+        data: List[T], page: int, limit: int, total_count: int
+    ) -> PaginatedResponse[T]:
+        """Create a paginated response."""
+        total_pages = (total_count + limit - 1) // limit
+        has_next_page = page < total_pages
+
+        pagination_metadata = PaginationMetadata(
+            page=page,
+            limit=limit,
+            total_count=total_count,
+            total_pages=total_pages,
+            has_next_page=has_next_page,
+        )
+
+        return PaginatedResponse(data=data, pagination=pagination_metadata)
