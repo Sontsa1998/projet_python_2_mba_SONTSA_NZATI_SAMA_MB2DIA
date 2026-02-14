@@ -59,3 +59,18 @@ app = FastAPI(
     version=API_VERSION,
     lifespan=lifespan,
 )
+
+
+@app.exception_handler(TransactionNotFound)
+async def transaction_not_found_handler(
+    request: Request, exc: TransactionNotFound
+):
+    """Handle TransactionNotFound exception."""
+    return JSONResponse(
+        status_code=status.HTTP_404_NOT_FOUND,
+        content={
+            "error": "Transaction not found",
+            "details": str(exc),
+            "timestamp": datetime.utcnow().isoformat(),
+        },
+    )
