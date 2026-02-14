@@ -29,3 +29,37 @@ def transaction_strategy():
         mcc=st.text(min_size=4, max_size=4),
         errors=st.none() | st.text(min_size=1, max_size=50),
     )
+
+
+@given(
+    st.lists(
+        transaction_strategy(),
+        min_size=1,
+        max_size=100,
+        unique_by=lambda t: t.id,
+    )
+)
+def test_transaction_retrieval_accuracy(transactions):
+    """
+    Property 2: Transaction Retrieval Accuracy.
+
+    For any transaction ID that exists in the system, querying by that ID
+    should return the exact transaction that was loaded.
+
+    **Validates: Requirements 2.2**
+    """
+    repo = TransactionRepository()
+    repo.data_load_date = datetime.utcnow()
+    service = TransactionService(repo)
+
+    # Load transactions
+    for transaction in transactions:
+        repo._add_transaction(transaction)
+
+    # Verify retrieval accuracy
+    for transaction in transactions:
+        retrieved = service.get_transaction_by_id(transaction.id)
+        assert retrieved == transaction
+        assert retrieved.id == transaction.id
+        assert retrieved.date == transaction.date
+        assert retrieved.amount == transaction.amount
