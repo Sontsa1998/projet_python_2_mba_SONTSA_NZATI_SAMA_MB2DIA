@@ -26,3 +26,15 @@ class TestCustomerServiceExtended:
         assert hasattr(result, "data")
         assert hasattr(result, "pagination")
         assert result.pagination.page == 1
+    def test_get_customer_details_nonexistent(self, repository):
+        """Test getting nonexistent customer."""
+        service = CustomerService(repository)
+        result = service.get_customer_details("nonexistent_id")
+        assert result.customer_id == "nonexistent_id"
+        assert result.transaction_count == 0
+
+    def test_get_top_customers_limit(self, repository):
+        """Test getting top customers with limit."""
+        service = CustomerService(repository)
+        result = service.get_top_customers(n=5)
+        assert len(result) <= 5
