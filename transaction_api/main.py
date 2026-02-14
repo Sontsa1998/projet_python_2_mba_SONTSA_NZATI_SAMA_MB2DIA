@@ -118,3 +118,17 @@ async def invalid_search_filters_handler(
             "timestamp": datetime.utcnow().isoformat(),
         },
     )
+
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request: Request, exc: Exception):
+    """Handle general exceptions."""
+    logger.error(f"Unexpected error: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={
+            "error": "Internal server error",
+            "details": "An unexpected error occurred",
+            "timestamp": datetime.utcnow().isoformat(),
+        },
+    )
