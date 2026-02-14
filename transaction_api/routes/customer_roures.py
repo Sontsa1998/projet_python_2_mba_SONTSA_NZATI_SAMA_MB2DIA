@@ -16,3 +16,7 @@ from transaction_api.models import (
     TopCustomer,
 )
 from transaction_api.services.customer_service import CustomerService
+
+logger = get_logger(__name__)
+
+router: APIRouter = APIRouter(prefix="/api/customers", tags=["customers"])
