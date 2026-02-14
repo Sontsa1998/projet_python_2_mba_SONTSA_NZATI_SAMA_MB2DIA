@@ -73,3 +73,41 @@ def test_transaction_type_uniqueness(transactions):
     # Verify sorted by count descending
     counts = [t["count"] for t in types]
     assert counts == sorted(counts, reverse=True)
+
+
+@given(
+    st.lists(
+        transaction_strategy(),
+        min_size=1,
+        max_size=100,
+        unique_by=lambda t: t.id,
+    )
+)
+def test_recent_transactions_ordering(transactions):
+    """
+    Property 6: Recent Transactions Ordering.
+
+    For any recent transactions query, returned transactions should be sorted
+    by date in descending order, with the first transaction having the most
+    recent date.
+
+    **Validates: Requirements 5.1, 5.2**
+    """
+    repo = TransactionRepository()
+    repo.data_load_date = datetime.utcnow()
+    service = TransactionService(repo)
+
+    # Load transactions
+    for transaction in transactions:
+        repo._add_transaction(transaction)
+
+    # Get recent transactions
+    response = service.get_recent_transactions(limit=100)
+
+    # Verify sorted by date descending
+    dates = [t.date for t in response.data]
+    assert dates == sorted(dates, reverse=True)
+
+    # Verify first transaction is most recent
+    if response.data:
+        assert response.data[0].date == max(t.date for t in transactions)
