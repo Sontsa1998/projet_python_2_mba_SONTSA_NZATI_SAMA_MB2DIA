@@ -43,3 +43,12 @@ class TransactionService:
         return PaginationService.create_paginated_response(
             transactions, page, limit, total_count
         )
+    
+    def get_transaction_by_id(self, transaction_id: str) -> Transaction:
+        """Get a transaction by ID."""
+        transaction = self.repository.get_by_id(transaction_id)
+        if transaction is None:
+            logger.warning(f"Transaction not found: {transaction_id}")
+            msg = f"Transaction with ID {transaction_id} not found"
+            raise TransactionNotFound(msg)
+        return transaction
