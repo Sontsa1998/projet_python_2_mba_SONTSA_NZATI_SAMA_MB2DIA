@@ -110,3 +110,46 @@ def test_amount_distribution_completeness(transactions):
     # Verify percentages sum to 100 (approximately)
     total_percentage = sum(b.percentage for b in distribution.buckets)
     assert abs(total_percentage - 100.0) < 0.1 or len(transactions) == 0
+
+
+@given(
+    st.lists(
+        transaction_strategy(),
+        min_size=1,
+        max_size=100,
+        unique_by=lambda t: t.id,
+    )
+)
+def test_type_statistics_accuracy(transactions):
+    """
+    Property 11: Type Statistics Accuracy.
+
+    For any statistics by type query, for each type, the count should equal
+    the number of transactions with that type, and the sum of all counts
+    should equal total transaction count.
+
+    **Validates: Requirements 11.1, 11.2, 11.3**
+    """
+    repo = TransactionRepository()
+    repo.data_load_date = datetime.utcnow()
+    service = StatisticsService(repo)
+
+    # Load transactions
+    for transaction in transactions:
+        repo._add_transaction(transaction)
+
+    # Get type statistics
+    type_stats = service.get_stats_by_type()
+
+    # Verify sum of counts equals total
+    total_count = sum(t.count for t in type_stats)
+    assert total_count == len(transactions)
+
+    # Verify each type count is correct
+    for type_stat in type_stats:
+        expected_count = len(repo.get_all_by_type(type_stat.type))
+        assert type_stat.count == expected_count
+
+    # Verify sorted by count descending
+    counts = [t.count for t in type_stats]
+    assert counts == sorted(counts, reverse=True)
