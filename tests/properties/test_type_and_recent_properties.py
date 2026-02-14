@@ -29,3 +29,47 @@ def transaction_strategy():
         mcc=st.text(min_size=4, max_size=4),
         errors=st.none() | st.text(min_size=1, max_size=50),
     )
+
+
+@given(
+    st.lists(
+        transaction_strategy(),
+        min_size=1,
+        max_size=100,
+        unique_by=lambda t: t.id,
+    )
+)
+def test_transaction_type_uniqueness(transactions):
+    """
+    Property 5: Transaction Type Uniqueness.
+
+    For any transaction type returned from /api/transactions/types, the count
+    should equal the number of transactions with that type, and the sum of all
+    counts should equal total transaction count.
+
+    **Validates: Requirements 4.1, 4.2, 4.3**
+    """
+    repo = TransactionRepository()
+    repo.data_load_date = datetime.utcnow()
+    service = TransactionService(repo)
+
+    # Load transactions
+    for transaction in transactions:
+        repo._add_transaction(transaction)
+
+    # Get transaction types (now based on use_chip)
+    types = service.get_transaction_types()
+
+    # Verify sum of counts equals total
+    total_count = sum(t["count"] for t in types)
+    assert total_count == len(transactions)
+
+    # Verify each type count is correct
+    for type_info in types:
+        use_chip = type_info["type"]
+        expected_count = len(repo.get_all_by_use_chip(use_chip))
+        assert type_info["count"] == expected_count
+
+    # Verify sorted by count descending
+    counts = [t["count"] for t in types]
+    assert counts == sorted(counts, reverse=True)
