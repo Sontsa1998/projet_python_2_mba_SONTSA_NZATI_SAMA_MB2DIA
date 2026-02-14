@@ -43,3 +43,24 @@ class FraudService:
         """Get fraud statistics grouped by use_chip type."""
         use_chip_types = self.repository.get_all_use_chip_types()
         fraud_stats = []
+
+        for use_chip in use_chip_types:
+            transactions = self.repository.get_all_by_use_chip(use_chip)
+            fraud_transactions = [t for t in transactions if t.errors]
+
+            if transactions:
+                fraud_count = len(fraud_transactions)
+                total_count = len(transactions)
+                if total_count > 0:
+                    fraud_rate = fraud_count / total_count
+                else:
+                    fraud_rate = 0.0
+
+                fraud_stats.append(
+                    FraudTypeStats(
+                        type=use_chip,
+                        fraud_count=fraud_count,
+                        fraud_rate=fraud_rate,
+                        total_count=total_count,
+                    )
+                )
