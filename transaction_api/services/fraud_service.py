@@ -67,6 +67,7 @@ class FraudService:
                    # Sort by fraud rate descending
         fraud_stats.sort(key=lambda x: x.fraud_rate, reverse=True)
         return fraud_stats
+    
      def predict_fraud(self, transaction: Transaction) -> FraudPrediction:
         """Predict fraud risk for a transaction."""
         score = self._calculate_fraud_score(transaction)
@@ -77,3 +78,21 @@ class FraudService:
     def _calculate_fraud_score(self, transaction: Transaction) -> float:
         """Calculate fraud score for a transaction."""
         score = 0.0
+
+        
+        # Check if transaction has errors field
+        if transaction.errors:
+            score += 0.8
+
+        # Check amount - very high amounts are suspicious
+        if transaction.amount > 5000:
+            score += 0.2
+        elif transaction.amount > 2000:
+            score += 0.1
+
+        # Check if chip was not used - higher fraud risk
+        if not transaction.use_chip:
+            score += 0.1
+
+        # Ensure score is between 0 and 1
+        return min(1.0, max(0.0, score))
