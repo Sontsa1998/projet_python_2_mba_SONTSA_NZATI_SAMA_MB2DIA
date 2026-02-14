@@ -15,3 +15,14 @@ def repository():
     repo.load_from_csv("./data/transactions.csv")
     return repo
 
+
+class TestCustomerServiceExtended:
+    """Extended tests for customer service."""
+
+    def test_get_all_customers_pagination(self, repository):
+        """Test getting all customers with pagination."""
+        service = CustomerService(repository)
+        result = service.get_all_customers(page=1, limit=10)
+        assert hasattr(result, "data")
+        assert hasattr(result, "pagination")
+        assert result.pagination.page == 1
