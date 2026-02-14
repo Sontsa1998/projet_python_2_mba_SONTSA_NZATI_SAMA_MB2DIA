@@ -115,3 +115,21 @@ class TestStatisticsRoutesExtended:
         """Test getting statistics by type."""
         response = client.get("/api/stats/by-type")
         assert response.status_code == 200
+
+
+class TestSystemRoutesExtended:
+    """Extended tests for system routes."""
+
+    def test_health_check_response(self, client):
+        """Test health check response structure."""
+        response = client.get("/api/system/health")
+        assert response.status_code == 200
+        data = response.json()
+        assert "status" in data
+
+    def test_metadata_response(self, client):
+        """Test metadata response structure."""
+        response = client.get("/api/system/metadata")
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, dict)     
