@@ -89,3 +89,16 @@ class TransactionService:
         """Get all transaction types (use_chip) with counts."""
         use_chip_types = self.repository.get_all_use_chip_types()
         type_stats: List[dict] = []
+        
+        for use_chip in use_chip_types:
+            transactions = self.repository.get_all_by_use_chip(use_chip)
+            type_stats.append(
+                {
+                    "type": use_chip,
+                    "count": len(transactions),
+                }
+            )
+
+        # Sort by count descending
+        type_stats.sort(key=lambda x: x["count"], reverse=True)  # type: ignore
+        return type_stats
