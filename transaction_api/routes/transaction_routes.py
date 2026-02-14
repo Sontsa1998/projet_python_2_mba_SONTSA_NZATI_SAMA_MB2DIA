@@ -95,3 +95,8 @@ async def delete_transaction(transaction_id: str) -> None:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error deleting transaction",
         )
+
+@router.post(
+    "/transactionResearch/search",
+    response_model=PaginatedResponse[Transaction],
+)
