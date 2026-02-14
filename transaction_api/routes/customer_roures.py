@@ -61,3 +61,24 @@ async def get_customer_details(customer_id: str) -> Customer:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error retrieving customer details",
         )
+
+
+@router.get("/Ranked/top", response_model=list[TopCustomer])
+async def get_top_customers(
+    n: int = Query(
+        10,
+        ge=1,
+        le=1000,
+        description="Number of top customers",
+    ),
+) -> list[TopCustomer]:
+    """Get top n customers by transaction count."""
+    try:
+        service = get_service()
+        return service.get_top_customers(n=n)
+    except Exception as e:
+        logger.error(f"Error getting top customers: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error retrieving top customers",
+        )
