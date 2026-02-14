@@ -97,3 +97,45 @@ def test_non_existent_resource_handling(transactions):
         assert False, "Should have raised TransactionNotFound"
     except TransactionNotFound:
         pass
+
+
+@given(
+    st.lists(
+        transaction_strategy(),
+        min_size=1,
+        max_size=100,
+        unique_by=lambda t: t.id,
+    )
+)
+def test_empty_result_handling(transactions):
+    """
+    Property 24: Empty Result Handling.
+
+    For any query that returns no results (e.g., non-existent customer),
+    the API should return a valid paginated response with an empty data array
+    and correct pagination metadata.
+
+    **Validates: Requirements 7.3, 8.3, 24.1**
+    """
+    repo = TransactionRepository()
+    repo.data_load_date = datetime.utcnow()
+    service = TransactionService(repo)
+
+    # Load transactions
+    for transaction in transactions:
+        repo._add_transaction(transaction)
+
+    # Test non-existent customer
+    response = service.get_customer_transactions(
+        customer_id="nonexistent_customer_12345", page=1, limit=50
+    )
+
+    # Verify empty data
+    assert len(response.data) == 0
+
+    # Verify pagination metadata is correct
+    assert response.pagination.total_count == 0
+    assert response.pagination.page == 1
+    assert response.pagination.limit == 50
+    assert response.pagination.total_pages == 0
+    assert response.pagination.has_next_page is False
