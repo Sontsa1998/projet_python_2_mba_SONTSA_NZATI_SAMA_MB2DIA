@@ -16,3 +16,24 @@ class HealthService:
     def __init__(self, repository: TransactionRepository) -> None:
         """Initialize the service."""
         self.repository = repository
+    
+    def check_health(self) -> HealthStatus:
+        """Check system health."""
+        start_time = time.time()
+
+        try:
+            # Simple health check - verify repository is accessible
+            _ = self.repository.get_all_transactions()
+
+            response_time_ms = (time.time() - start_time) * 1000
+            return HealthStatus(
+                status="healthy",
+                response_time_ms=response_time_ms,
+            )
+        except Exception as e:
+            logger.error(f"Health check failed: {e}")
+            response_time_ms = (time.time() - start_time) * 1000
+            return HealthStatus(
+                status="unhealthy",
+                response_time_ms=response_time_ms,
+            )
