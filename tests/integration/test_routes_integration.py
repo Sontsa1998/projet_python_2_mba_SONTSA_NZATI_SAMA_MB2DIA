@@ -217,3 +217,23 @@ class TestStatisticsRoutes:
         assert "total_transactions" in data or "total_amount" in data
 
 
+class TestSystemRoutes:
+    """Test system routes."""
+
+    def test_health_check(self, client):
+        """Test health check endpoint."""
+        response = client.get("/api/system/health")
+        assert response.status_code == 200
+        data = response.json()
+        assert "status" in data
+
+    def test_metadata(self, client):
+        """Test metadata endpoint."""
+        response = client.get("/api/system/metadata")
+        assert response.status_code == 200
+        data = response.json()
+        assert (
+            "version" in data
+            or "data_load_date" in data
+            or "total_transactions" in data
+        )
