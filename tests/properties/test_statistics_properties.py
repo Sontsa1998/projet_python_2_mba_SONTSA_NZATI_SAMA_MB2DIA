@@ -153,3 +153,52 @@ def test_type_statistics_accuracy(transactions):
     # Verify sorted by count descending
     counts = [t.count for t in type_stats]
     assert counts == sorted(counts, reverse=True)
+
+
+@given(
+    st.lists(
+        transaction_strategy(),
+        min_size=1,
+        max_size=100,
+        unique_by=lambda t: t.id,
+    )
+)
+def test_daily_statistics_aggregation(transactions):
+    """
+    Property 12: Daily Statistics Aggregation.
+
+    For any daily statistics query, for each day, the count should equal the
+    number of transactions on that day, and the sum of all daily counts should
+    equal total transaction count.
+
+    **Validates: Requirements 12.1, 12.2, 12.3**
+    """
+    repo = TransactionRepository()
+    repo.data_load_date = datetime.utcnow()
+    service = StatisticsService(repo)
+
+    # Load transactions
+    for transaction in transactions:
+        repo._add_transaction(transaction)
+
+    if not transactions:
+        return
+
+    # Get daily statistics
+    daily_stats = service.get_daily_stats()
+
+    # Verify sum of counts equals total
+    total_count = sum(d["count"] for d in daily_stats)
+    assert total_count == len(transactions)
+
+    # Verify each day's count is correct
+    for day_stat in daily_stats:
+        expected_count = len(
+            [
+                t
+                for t in transactions
+                if t.date.date()
+                == datetime.fromisoformat(day_stat["date"]).date()
+            ]
+        )
+        assert day_stat["count"] == expected_count
