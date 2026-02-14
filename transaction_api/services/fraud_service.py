@@ -13,3 +13,10 @@ from transaction_api.repository import TransactionRepository
 
 logger = get_logger(__name__)
 
+
+class FraudService:
+    """Service for fraud detection operations."""
+
+    def __init__(self, repository: TransactionRepository) -> None:
+        """Initialize the service."""
+        self.repository = repository
