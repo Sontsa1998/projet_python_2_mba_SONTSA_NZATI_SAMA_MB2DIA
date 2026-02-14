@@ -7,3 +7,11 @@ from transaction_api.services.fraud_service import FraudService
 from transaction_api.services.statistics_service import StatisticsService
 from transaction_api.services.health_service import HealthService
 from transaction_api.services.transaction_service import TransactionService
+
+@pytest.fixture(scope="module")
+def repository():
+    """Create repository with test data."""
+    repo = TransactionRepository()
+    repo.load_from_csv("./data/transactions.csv")
+    return repo
+
