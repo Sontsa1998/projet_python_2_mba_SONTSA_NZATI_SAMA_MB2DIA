@@ -179,4 +179,11 @@ class SystemMetadata(BaseModel):
     max_date: datetime = Field(..., description="Latest date")
 
 
-    
+class ErrorResponse(BaseModel):
+    """Error response."""
+
+    error: str = Field(..., description="Error message")
+    details: Optional[str] = Field(None, description="Details")
+    timestamp: datetime = Field(..., description="Timestamp")
+
+
