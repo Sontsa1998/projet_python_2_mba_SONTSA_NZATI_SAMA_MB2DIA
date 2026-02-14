@@ -25,3 +25,13 @@ class InvalidSearchFilters(TransactionAPIException):
     """Exception raised when search filters are invalid."""
 
     pass
+
+class DataLoadingError(TransactionAPIException):
+    """Exception raised when data loading fails."""
+
+    pass
+
+class InvalidTransactionData(TransactionAPIException):
+    """Exception raised when transaction data is invalid."""
+
+    pass
