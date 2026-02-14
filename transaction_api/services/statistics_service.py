@@ -114,3 +114,32 @@ class StatisticsService:
         # Sort by count descending
         type_stats.sort(key=lambda x: x.count, reverse=True)
         return type_stats
+    
+    def get_daily_stats(self) -> list[dict]:
+        """Get daily statistics grouped by date."""
+        transactions = self.repository.get_all_transactions()
+
+        # Group by date
+        daily_data = defaultdict(list)
+        for transaction in transactions:
+            day = transaction.date.date()
+            daily_data[day].append(transaction)
+
+        # Create daily stats
+        daily_stats = []
+        for day in sorted(daily_data.keys()):
+            transactions_on_day = daily_data[day]
+            count = len(transactions_on_day)
+            total_amount = sum(t.amount for t in transactions_on_day)
+            average_amount = total_amount / count if count > 0 else 0.0
+
+            daily_stats.append(
+                {
+                    "date": str(day),
+                    "count": count,
+                    "total_amount": total_amount,
+                    "average_amount": average_amount,
+                }
+            )
+
+        return daily_stats
