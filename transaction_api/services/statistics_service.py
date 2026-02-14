@@ -51,3 +51,41 @@ class StatisticsService:
             min_date=min_date,
             max_date=max_date,
         )
+    
+    def get_amount_distribution(self) -> AmountDistribution:
+        """Get amount distribution statistics."""
+        transactions = self.repository.get_all_transactions()
+        total_count = len(transactions)
+
+        if total_count == 0:
+            buckets = [
+                AmountBucket(range=b["label"], count=0, percentage=0.0)
+                for b in AMOUNT_BUCKETS
+            ]
+            return AmountDistribution(buckets=buckets)
+
+        # Count transactions in each bucket
+        bucket_counts: dict = defaultdict(int)
+        for transaction in transactions:
+            for bucket in AMOUNT_BUCKETS:
+                if bucket["min"] <= transaction.amount < bucket["max"]:
+                    bucket_counts[bucket["label"]] += 1
+                    break
+
+        # Create bucket responses
+        buckets = []
+        for bucket in AMOUNT_BUCKETS:
+            count = bucket_counts[bucket["label"]]
+            if total_count > 0:
+                percentage = count / total_count * 100
+            else:
+                percentage = 0.0
+            buckets.append(
+                AmountBucket(
+                    range=bucket["label"],
+                    count=count,
+                    percentage=percentage,
+                )
+            )
+
+        return AmountDistribution(buckets=buckets)
