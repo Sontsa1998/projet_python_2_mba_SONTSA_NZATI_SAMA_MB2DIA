@@ -25,3 +25,41 @@ chmod +x start.sh
 ```bash
 start.bat
 ```
+
+#### Option 3: Lancer manuellement
+
+Terminal 1 - Démarrer l'API:
+```bash
+python -m uvicorn transaction_api.main:app --reload --workers 1
+```
+
+Terminal 2 - Démarrer Streamlit:
+```bash
+streamlit run app.py
+```
+
+## Accès aux Applications
+
+- **API FastAPI**: http://localhost:8000
+- **Documentation API**: http://localhost:8000/docs
+- **Interface Streamlit**: http://localhost:8501
+
+## Premiers Pas
+
+### 1. Vérifier la santé de l'API
+```bash
+curl http://localhost:8000/api/system/health
+```
+
+### 2. Obtenir les statistiques
+```bash
+curl http://localhost:8000/api/stats/overview
+```
+
+### 3. Lister les clients
+```bash
+curl http://localhost:8000/api/customers?page=1&limit=10
+```
+
+### 4. Accéder à l'interface Streamlit
+Ouvrir http://localhost:8501 dans votre navigateur
