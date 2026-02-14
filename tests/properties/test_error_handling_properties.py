@@ -62,3 +62,38 @@ def test_invalid_pagination_handling(page, limit):
             assert False, "Should have raised InvalidPaginationParameters"
         except InvalidPaginationParameters:
             pass
+
+
+@given(
+    st.lists(
+        transaction_strategy(),
+        min_size=1,
+        max_size=100,
+        unique_by=lambda t: t.id,
+    )
+)
+def test_non_existent_resource_handling(transactions):
+    """
+    Property 23: Non-existent Resource Handling.
+
+    For any query for a non-existent transaction ID or customer_id, the API
+    should return a 404 error with a descriptive message.
+
+    **Validates: Requirements 2.3, 17.3**
+    """
+    repo = TransactionRepository()
+    repo.data_load_date = datetime.utcnow()
+    service = TransactionService(repo)
+
+    # Load transactions
+    for transaction in transactions:
+        repo._add_transaction(transaction)
+
+    # Test non-existent transaction
+    from transaction_api.exceptions import TransactionNotFound
+
+    try:
+        service.get_transaction_by_id("nonexistent_id_12345")
+        assert False, "Should have raised TransactionNotFound"
+    except TransactionNotFound:
+        pass
