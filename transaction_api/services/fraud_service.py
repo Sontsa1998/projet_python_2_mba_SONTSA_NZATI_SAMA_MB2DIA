@@ -64,3 +64,7 @@ class FraudService:
                         total_count=total_count,
                     )
                 )
+                   # Sort by fraud rate descending
+        fraud_stats.sort(key=lambda x: x.fraud_rate, reverse=True)
+        return fraud_stats
+
