@@ -98,4 +98,20 @@ class TestFraudRoutesExtended:
                 )
                 assert response.status_code == 200
 
+class TestStatisticsRoutesExtended:
+    """Extended tests for statistics routes."""
 
+    def test_get_overview_stats(self, client):
+        """Test getting overview statistics."""
+        response = client.get("/api/stats/overview")
+        assert response.status_code == 200
+
+    def test_get_amount_distribution(self, client):
+        """Test getting amount distribution."""
+        response = client.get("/api/stats/amount-distribution")
+        assert response.status_code == 200
+
+    def test_get_stats_by_type(self, client):
+        """Test getting statistics by type."""
+        response = client.get("/api/stats/by-type")
+        assert response.status_code == 200
