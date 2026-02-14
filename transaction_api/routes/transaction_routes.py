@@ -124,3 +124,8 @@ async def search_transactions(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error searching transactions",
         )
+
+@router.get(
+    "/Type/types",
+    response_model=list[dict],
+)
