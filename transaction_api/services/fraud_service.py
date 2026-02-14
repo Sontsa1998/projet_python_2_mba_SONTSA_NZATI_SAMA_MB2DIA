@@ -96,3 +96,26 @@ class FraudService:
 
         # Ensure score is between 0 and 1
         return min(1.0, max(0.0, score))
+
+    def _generate_reasoning(
+        self, transaction: Transaction, score: float
+    ) -> str:
+        """Generate reasoning for fraud prediction."""
+        reasons = []
+
+        if transaction.errors:
+            reasons.append(f"Has error flag: {transaction.errors}")
+
+        if transaction.amount > 5000:
+            reasons.append(f"High amount: ${transaction.amount:.2f}")
+        elif transaction.amount > 2000:
+            reasons.append(f"Moderate amount: ${transaction.amount:.2f}")
+
+        if not transaction.use_chip:
+            reasons.append("Chip was not used")
+
+        if not reasons:
+            reasons.append("No fraud indicators detected")
+
+        reasoning = "; ".join(reasons)
+        return reasoning
