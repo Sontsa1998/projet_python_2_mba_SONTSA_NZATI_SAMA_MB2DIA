@@ -138,3 +138,17 @@ async def general_exception_handler(request: Request, exc: Exception):
 async def health_check():
     """Health check endpoint."""
     return {"status": "ok"}
+
+
+# Include routers
+app.include_router(transaction_router)
+app.include_router(statistics_router)
+app.include_router(fraud_router)
+app.include_router(customer_router)
+app.include_router(system_router)
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=8000)
