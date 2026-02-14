@@ -16,7 +16,7 @@ class HealthService:
     def __init__(self, repository: TransactionRepository) -> None:
         """Initialize the service."""
         self.repository = repository
-    
+
     def check_health(self) -> HealthStatus:
         """Check system health."""
         start_time = time.time()
