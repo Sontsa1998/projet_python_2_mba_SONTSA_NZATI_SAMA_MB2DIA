@@ -96,7 +96,31 @@ async def delete_transaction(transaction_id: str) -> None:
             detail="Error deleting transaction",
         )
 
+
 @router.post(
     "/transactionResearch/search",
     response_model=PaginatedResponse[Transaction],
 )
+async def search_transactions(
+    filters: SearchFilters,
+    page: int = Query(1, ge=1),
+    limit: int = Query(50, ge=1, le=1000),
+) -> PaginatedResponse[Transaction]:
+    """Search transactions with multi-criteria filters."""
+    try:
+        service = get_service()
+        return service.search_transactions(
+            filters=filters, page=page, limit=limit
+        )
+    except InvalidPaginationParameters as e:
+        logger.error(f"Invalid pagination parameters: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+    except Exception as e:
+        logger.error(f"Error searching transactions: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error searching transactions",
+        )
