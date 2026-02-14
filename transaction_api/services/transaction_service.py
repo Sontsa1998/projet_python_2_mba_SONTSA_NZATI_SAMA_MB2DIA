@@ -138,3 +138,22 @@ class TransactionService:
         return PaginationService.create_paginated_response(
             transactions, page, limit, total_count
         )
+    
+    def get_merchant_transactions(
+        self, merchant_id: str, page: int = 1, limit: int = 50
+    ) -> PaginatedResponse[Transaction]:
+        """Get transactions for a merchant."""
+        try:
+            page, limit = PaginationService.validate_pagination_params(
+                page, limit
+            )
+        except InvalidPaginationParameters as e:
+            logger.error(f"Invalid pagination parameters: {e}")
+            raise
+
+        transactions, total_count = self.repository.get_by_merchant(
+            merchant_id=merchant_id, page=page, limit=limit
+        )
+        return PaginationService.create_paginated_response(
+            transactions, page, limit, total_count
+        )
