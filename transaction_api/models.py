@@ -63,3 +63,45 @@ class PaginatedResponse(BaseModel, Generic[T]):
     pagination: PaginationMetadata = Field(..., description="Pagination info")
 
 
+class OverviewStats(BaseModel):
+    """Overview statistics."""
+
+    total_count: int = Field(..., description="Total transactions")
+    total_amount: float = Field(..., description="Total amount")
+    average_amount: float = Field(..., description="Average amount")
+    min_date: datetime = Field(..., description="Earliest date")
+    max_date: datetime = Field(..., description="Latest date")
+
+
+class AmountBucket(BaseModel):
+    """Amount distribution bucket."""
+
+    range: str = Field(..., description="Range label")
+    count: int = Field(..., description="Bucket count")
+    percentage: float = Field(..., description="Percentage of total")
+
+
+class AmountDistribution(BaseModel):
+    """Amount distribution statistics."""
+
+    buckets: List[AmountBucket] = Field(..., description="Buckets")
+
+
+class TypeStats(BaseModel):
+    """Statistics for a transaction type."""
+
+    type: str = Field(..., description="Transaction type")
+    count: int = Field(..., description="Count")
+    total_amount: float = Field(..., description="Total amount")
+    average_amount: float = Field(..., description="Average amount")
+
+
+class DailyStats(BaseModel):
+    """Daily statistics."""
+
+    date: date_type = Field(..., description="Date")
+    count: int = Field(..., description="Count")
+    total_amount: float = Field(..., description="Total amount")
+    average_amount: float = Field(..., description="Average amount")
+
+
