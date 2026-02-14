@@ -7,3 +7,8 @@ from transaction_api.logging_config import get_logger
 from transaction_api.models import HealthStatus, SystemMetadata
 from transaction_api.services.health_service import HealthService
 
+logger = get_logger(__name__)
+
+router: APIRouter = APIRouter(prefix="/api/system", tags=["system"])
+
+
