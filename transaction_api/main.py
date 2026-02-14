@@ -103,3 +103,18 @@ async def invalid_pagination_handler(
             "timestamp": datetime.utcnow().isoformat(),
         },
     )
+
+
+@app.exception_handler(InvalidSearchFilters)
+async def invalid_search_filters_handler(
+    request: Request, exc: InvalidSearchFilters
+):
+    """Handle InvalidSearchFilters exception."""
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={
+            "error": "Invalid search filters",
+            "details": str(exc),
+            "timestamp": datetime.utcnow().isoformat(),
+        },
+    )
