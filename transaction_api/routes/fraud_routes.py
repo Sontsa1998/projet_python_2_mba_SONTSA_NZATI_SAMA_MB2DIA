@@ -24,3 +24,16 @@ def get_service() -> FraudService:
             detail="Repository not initialized",
         )
     return FraudService(app_context.repository)
+
+@router.get("/summary", response_model=FraudSummary)
+async def get_fraud_summary() -> FraudSummary:
+    """Get fraud detection summary."""
+    try:
+        service = get_service()
+        return service.get_fraud_summary()
+    except Exception as e:
+        logger.error(f"Error getting fraud summary: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error retrieving fraud summary",
+        )
