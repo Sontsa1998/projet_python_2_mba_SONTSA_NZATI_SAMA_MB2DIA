@@ -124,3 +124,43 @@ def test_customer_details_accuracy(transactions):
             expected_total / expected_count if expected_count > 0 else 0.0
         )
         assert abs(customer.average_amount - expected_average) < 0.01
+
+
+@given(
+    st.lists(
+        transaction_strategy(),
+        min_size=1,
+        max_size=100,
+        unique_by=lambda t: t.id,
+    )
+)
+def test_top_customers_ranking(transactions):
+    """
+    Property 18: Top Customers Ranking.
+
+    For any top customers query with n, the returned customers should
+    be sorted by transaction_count in descending order, and the number of
+    returned customers should be at most n.
+
+    **Validates: Requirements 18.1, 18.2, 18.3**
+    """
+    repo = TransactionRepository()
+    repo.data_load_date = datetime.utcnow()
+    service = CustomerService(repo)
+
+    # Load transactions
+    for transaction in transactions:
+        repo._add_transaction(transaction)
+
+    # Get top customers
+    n = 10
+    top_customers = service.get_top_customers(n=n)
+
+    # Verify number of returned customers
+    unique_customer_count = len(set(t.client_id for t in transactions))
+    expected_count = min(n, unique_customer_count)
+    assert len(top_customers) == expected_count
+
+    # Verify sorted by transaction count descending
+    counts = [c.transaction_count for c in top_customers]
+    assert counts == sorted(counts, reverse=True)
