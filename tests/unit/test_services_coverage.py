@@ -97,3 +97,19 @@ class TestStatisticsServiceExtended:
         result = service.get_daily_stats()
         assert isinstance(result, list)
 
+
+class TestHealthServiceExtended:
+    """Extended tests for health service."""
+
+    def test_check_health(self, repository):
+        """Test health check."""
+        service = HealthService(repository)
+        result = service.check_health()
+        assert hasattr(result, "status")
+
+    def test_get_metadata(self, repository):
+        """Test getting metadata."""
+        service = HealthService(repository)
+        result = service.get_metadata()
+        assert hasattr(result, "api_version")
+        assert hasattr(result, "data_load_date")
