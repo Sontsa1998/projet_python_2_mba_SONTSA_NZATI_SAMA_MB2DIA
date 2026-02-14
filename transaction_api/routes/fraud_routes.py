@@ -37,3 +37,17 @@ async def get_fraud_summary() -> FraudSummary:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error retrieving fraud summary",
         )
+
+@router.get("/by-type", response_model=list[FraudTypeStats])
+async def get_fraud_by_type() -> list[FraudTypeStats]:
+    """Get fraud statistics grouped by use_chip type."""
+    try:
+        service = get_service()
+        return service.get_fraud_by_type()
+    except Exception as e:
+        logger.error(f"Error getting fraud by use_chip type: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error retrieving fraud statistics by use_chip type",
+        )
+
