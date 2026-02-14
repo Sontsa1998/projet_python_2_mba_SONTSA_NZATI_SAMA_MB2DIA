@@ -70,3 +70,17 @@ class TransactionService:
         return PaginationService.create_paginated_response(
             transactions, page, limit, total_count
         )
+    
+    def delete_transaction(self, transaction_id: str) -> None:
+        """Delete a transaction."""
+        transaction = self.repository.get_by_id(transaction_id)
+        if transaction is None:
+            logger.warning(
+                "Transaction not found for deletion: %s",
+                transaction_id,
+            )
+            msg = f"Transaction with ID {transaction_id} not found"
+            raise TransactionNotFound(msg)
+
+        self.repository.delete(transaction_id)
+        logger.info(f"Deleted transaction: {transaction_id}")
