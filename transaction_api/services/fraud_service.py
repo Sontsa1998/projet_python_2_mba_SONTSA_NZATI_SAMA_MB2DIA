@@ -39,6 +39,7 @@ class FraudService:
             fraud_rate=fraud_rate,
             total_fraud_amount=total_fraud_amount,
         )
+
     def get_fraud_by_type(self) -> List[FraudTypeStats]:
         """Get fraud statistics grouped by use_chip type."""
         use_chip_types = self.repository.get_all_use_chip_types()
@@ -64,11 +65,12 @@ class FraudService:
                         total_count=total_count,
                     )
                 )
-                   # Sort by fraud rate descending
+
+        # Sort by fraud rate descending
         fraud_stats.sort(key=lambda x: x.fraud_rate, reverse=True)
         return fraud_stats
-    
-     def predict_fraud(self, transaction: Transaction) -> FraudPrediction:
+
+    def predict_fraud(self, transaction: Transaction) -> FraudPrediction:
         """Predict fraud risk for a transaction."""
         score = self._calculate_fraud_score(transaction)
         reasoning = self._generate_reasoning(transaction, score)
@@ -79,7 +81,6 @@ class FraudService:
         """Calculate fraud score for a transaction."""
         score = 0.0
 
-        
         # Check if transaction has errors field
         if transaction.errors:
             score += 0.8
