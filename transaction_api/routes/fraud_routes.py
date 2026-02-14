@@ -51,3 +51,16 @@ async def get_fraud_by_type() -> list[FraudTypeStats]:
             detail="Error retrieving fraud statistics by use_chip type",
         )
 
+
+@router.post("/predict", response_model=FraudPrediction)
+async def predict_fraud(transaction: Transaction) -> FraudPrediction:
+    """Predict fraud risk for a transaction."""
+    try:
+        service = get_service()
+        return service.predict_fraud(transaction)
+    except Exception as e:
+        logger.error(f"Error predicting fraud: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error predicting fraud",
+        )
