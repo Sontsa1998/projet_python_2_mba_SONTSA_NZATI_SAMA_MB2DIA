@@ -52,3 +52,15 @@ class TransactionService:
             msg = f"Transaction with ID {transaction_id} not found"
             raise TransactionNotFound(msg)
         return transaction
+
+    def search_transactions(
+        self, filters: SearchFilters, page: int = 1, limit: int = 50
+    ) -> PaginatedResponse[Transaction]:
+        """Search transactions with filters."""
+        try:
+            page, limit = PaginationService.validate_pagination_params(
+                page, limit
+            )
+        except InvalidPaginationParameters as e:
+            logger.error(f"Invalid pagination parameters: {e}")
+            raise
