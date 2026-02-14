@@ -47,3 +47,20 @@ page = st.sidebar.radio(
     "Select a section:",
     ["Dashboard", "Clients", "Transactions", "Fraude", "Statistiques"],
 )
+
+
+# Helper functions
+def get_data(endpoint, params=None):
+    """Fetch data from API."""
+    try:
+        response = requests.get(
+            f"{API_BASE_URL}{endpoint}", params=params, timeout=10
+        )
+        if response.status_code == 200:
+            return response.json()
+        else:
+            st.error(f"Erreur API: {response.status_code}")
+            return None
+    except Exception as e:
+        st.error(f"Erreur de connexion: {str(e)}")
+        return None
