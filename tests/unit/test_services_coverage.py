@@ -113,3 +113,58 @@ class TestHealthServiceExtended:
         result = service.get_metadata()
         assert hasattr(result, "api_version")
         assert hasattr(result, "data_load_date")
+
+class TestTransactionServiceExtended:
+    """Extended tests for transaction service."""
+
+    def test_get_all_transactions(self, repository):
+        """Test getting all transactions."""
+        service = TransactionService(repository)
+        result = service.get_all_transactions(page=1, limit=10)
+        assert hasattr(result, "data")
+        assert len(result.data) <= 10
+
+    def test_get_transaction_by_id(self, repository):
+        """Test getting transaction by ID."""
+        service = TransactionService(repository)
+        transactions = repository.get_all_transactions()
+        if transactions:
+            result = service.get_transaction_by_id(transactions[0].id)
+            assert result.id == transactions[0].id
+
+    def test_search_transactions(self, repository):
+        """Test searching transactions."""
+        service = TransactionService(repository)
+        from transaction_api.models import SearchFilters
+
+        filters = SearchFilters(min_amount=100, max_amount=500)
+        result = service.search_transactions(filters=filters, page=1, limit=10)
+        assert hasattr(result, "data")
+
+    def test_get_transaction_types(self, repository):
+        """Test getting transaction types."""
+        service = TransactionService(repository)
+        result = service.get_transaction_types()
+        assert isinstance(result, list)
+
+    def test_get_recent_transactions(self, repository):
+        """Test getting recent transactions."""
+        service = TransactionService(repository)
+        result = service.get_recent_transactions(limit=10)
+        assert hasattr(result, "data")
+
+    def test_get_customer_transactions(self, repository):
+        """Test getting customer transactions."""
+        service = TransactionService(repository)
+        result = service.get_customer_transactions(
+            customer_id="1556", page=1, limit=10
+        )
+        assert hasattr(result, "data")
+
+    def test_get_merchant_transactions(self, repository):
+        """Test getting merchant transactions."""
+        service = TransactionService(repository)
+        result = service.get_merchant_transactions(
+            merchant_id="1556", page=1, limit=10
+        )
+        assert hasattr(result, "data")
