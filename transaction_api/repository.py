@@ -31,4 +31,46 @@ class TransactionRepository:
         self.min_date: Optional[datetime] = None
         self.max_date: Optional[datetime] = None
 
+    def load_from_csv(self, filepath: Optional[str] = None) -> None:
+        """Load transactions from CSV file."""
+        if filepath is None:
+            filepath = "./data/transactions.csv"
+
+        logger.info(f"Loading transactions from {filepath}")
+        loaded_count = 0
+        error_count = 0
+
+        try:
+            with open(filepath, "r", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                if reader.fieldnames is None:
+                    raise InvalidTransactionData("CSV file has no headers")
+
+                for row_num, row in enumerate(reader, start=2):
+                    try:
+                        # Skip empty rows
+                        if not row or not row.get("id", "").strip():
+                            continue
+
+                        transaction = self._parse_transaction(row)
+                        self._add_transaction(transaction)
+                        loaded_count += 1
+
+                        if loaded_count % CHUNK_SIZE == 0:
+                            logger.info(f"Loaded {loaded_count} transactions")
+                    except Exception as e:
+                        error_count += 1
+                        logger.warning(
+                            f"Error loading transaction at row {row_num}: {e}"
+                        )
+
+            self.data_load_date = datetime.utcnow()
+            logger.info(f"Transaction :{loaded_count}. Error: {error_count}")
+        except FileNotFoundError:
+            logger.error(f"CSV file not found: {filepath}")
+            raise
+        except Exception as e:
+            logger.error(f"Error loading CSV file: {e}")
+            raise
+
     
