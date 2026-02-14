@@ -31,3 +31,19 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+# Initialize session state
+if "page" not in st.session_state:
+    st.session_state.page = "Dashboard"
+if "customer_page" not in st.session_state:
+    st.session_state.customer_page = 1
+if "transaction_page" not in st.session_state:
+    st.session_state.transaction_page = 1
+if "fraud_page" not in st.session_state:
+    st.session_state.fraud_page = 1    
+# Sidebar navigation
+st.sidebar.title("📊 Navigation")
+page = st.sidebar.radio(
+    "Select a section:",
+    ["Dashboard", "Clients", "Transactions", "Fraude", "Statistiques"],
+)
