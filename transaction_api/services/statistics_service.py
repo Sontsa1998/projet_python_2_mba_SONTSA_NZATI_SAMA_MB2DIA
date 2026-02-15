@@ -1,4 +1,13 @@
-"""Statistics service for business logic."""
+"""Service de statistiques pour la logique métier.
+
+Ce module fournit la classe StatisticsService qui gère les opérations de calcul
+et d'analyse des statistiques sur les transactions.
+
+Classes
+-------
+StatisticsService
+    Service pour les opérations de statistiques.
+"""
 
 from collections import defaultdict
 from datetime import datetime
@@ -18,14 +27,46 @@ logger = get_logger(__name__)
 
 
 class StatisticsService:
-    """Service for statistics operations."""
+    """Service pour les opérations de statistiques.
+    
+    Gère le calcul et l'analyse des statistiques sur les transactions, y compris
+    les statistiques générales, la distribution des montants et les statistiques
+    par type de transaction.
+    
+    Attributs
+    ---------
+    repository : TransactionRepository
+        Le référentiel de transactions utilisé pour accéder aux données.
+    """
 
     def __init__(self, repository: TransactionRepository) -> None:
-        """Initialize the service."""
+        """Initialiser le service.
+        
+        Paramètres
+        ----------
+        repository : TransactionRepository
+            Le référentiel de transactions pour accéder aux données.
+        """
         self.repository = repository
     
     def get_overview_stats(self) -> OverviewStats:
-        """Get overview statistics."""
+        """Récupérer les statistiques générales.
+        
+        Calcule et retourne les statistiques générales sur toutes les transactions,
+        y compris le nombre total, les montants et les dates.
+        
+        Retours
+        -------
+        OverviewStats
+            Objet contenant les statistiques générales.
+        
+        Exemples
+        --------
+        >>> service = StatisticsService(repository)
+        >>> stats = service.get_overview_stats()
+        >>> stats.total_count
+        1000
+        """
         transactions = self.repository.get_all_transactions()
 
         if not transactions:
@@ -53,7 +94,23 @@ class StatisticsService:
         )
     
     def get_amount_distribution(self) -> AmountDistribution:
-        """Get amount distribution statistics."""
+        """Récupérer les statistiques de distribution des montants.
+        
+        Calcule la distribution des transactions par plages de montants prédéfinies,
+        y compris le nombre et le pourcentage pour chaque plage.
+        
+        Retours
+        -------
+        AmountDistribution
+            Objet contenant la distribution des montants par plages.
+        
+        Exemples
+        --------
+        >>> service = StatisticsService(repository)
+        >>> distribution = service.get_amount_distribution()
+        >>> distribution.buckets[0].range
+        '0-100'
+        """
         transactions = self.repository.get_all_transactions()
         total_count = len(transactions)
 
@@ -91,7 +148,23 @@ class StatisticsService:
         return AmountDistribution(buckets=buckets)
 
     def get_stats_by_type(self) -> List[TypeStats]:
-        """Get statistics grouped by transaction type."""
+        """Récupérer les statistiques groupées par type de transaction.
+        
+        Calcule les statistiques pour chaque type de transaction (code de catégorie
+        de commerçant), y compris le nombre, les montants totaux et moyens.
+        
+        Retours
+        -------
+        List[TypeStats]
+            Liste des statistiques par type, triée par nombre décroissant.
+        
+        Exemples
+        --------
+        >>> service = StatisticsService(repository)
+        >>> stats = service.get_stats_by_type()
+        >>> stats[0].count >= stats[1].count
+        True
+        """
         types = self.repository.get_all_types()
         type_stats = []
 
@@ -116,7 +189,23 @@ class StatisticsService:
         return type_stats
     
     def get_daily_stats(self) -> list[dict]:
-        """Get daily statistics grouped by date."""
+        """Récupérer les statistiques quotidiennes groupées par date.
+        
+        Calcule les statistiques pour chaque jour, y compris le nombre de transactions,
+        les montants totaux et moyens par jour.
+        
+        Retours
+        -------
+        list[dict]
+            Liste des statistiques quotidiennes triées par date croissante.
+        
+        Exemples
+        --------
+        >>> service = StatisticsService(repository)
+        >>> daily = service.get_daily_stats()
+        >>> daily[0]["date"]
+        '2023-01-01'
+        """
         transactions = self.repository.get_all_transactions()
 
         # Group by date

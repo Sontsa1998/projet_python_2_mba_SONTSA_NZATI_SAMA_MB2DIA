@@ -1,4 +1,22 @@
-"""Statistics API routes."""
+"""Routes de l'API des statistiques.
+
+Ce module définit tous les points de terminaison (endpoints) de l'API pour les opérations
+de statistiques, y compris les statistiques générales, la distribution des montants,
+les statistiques par type et les statistiques quotidiennes.
+
+Fonctions
+---------
+get_service()
+    Obtenir une instance du service de statistiques.
+get_overview_stats()
+    Récupérer les statistiques générales.
+get_amount_distribution()
+    Récupérer la distribution des montants.
+get_stats_by_type()
+    Récupérer les statistiques par type de transaction.
+get_daily_stats()
+    Récupérer les statistiques quotidiennes.
+"""
 
 from fastapi import APIRouter, HTTPException, status
 
@@ -17,7 +35,18 @@ router: APIRouter = APIRouter(prefix="/api/stats", tags=["statistics"])
 
 
 def get_service() -> StatisticsService:
-    """Get statistics service instance."""
+    """Obtenir une instance du service de statistiques.
+    
+    Retours
+    -------
+    StatisticsService
+        Instance du service de statistiques.
+    
+    Lève
+    ----
+    HTTPException
+        Si le référentiel n'est pas initialisé.
+    """
     if app_context.repository is None:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -28,7 +57,18 @@ def get_service() -> StatisticsService:
 
 @router.get("/overview", response_model=OverviewStats)
 async def get_overview_stats() -> OverviewStats:
-    """Get overview statistics."""
+    """Récupérer les statistiques générales.
+    
+    Retours
+    -------
+    OverviewStats
+        Objet contenant les statistiques générales.
+    
+    Lève
+    ----
+    HTTPException
+        En cas d'erreur lors de la récupération.
+    """
     try:
         service = get_service()
         return service.get_overview_stats()
@@ -42,7 +82,18 @@ async def get_overview_stats() -> OverviewStats:
 
 @router.get("/amount-distribution", response_model=AmountDistribution)
 async def get_amount_distribution() -> AmountDistribution:
-    """Get amount distribution statistics."""
+    """Récupérer les statistiques de distribution des montants.
+    
+    Retours
+    -------
+    AmountDistribution
+        Objet contenant la distribution des montants par plages.
+    
+    Lève
+    ----
+    HTTPException
+        En cas d'erreur lors de la récupération.
+    """
     try:
         service = get_service()
         return service.get_amount_distribution()
@@ -56,7 +107,18 @@ async def get_amount_distribution() -> AmountDistribution:
 
 @router.get("/by-type", response_model=list[TypeStats])
 async def get_stats_by_type() -> list[TypeStats]:
-    """Get statistics grouped by transaction type."""
+    """Récupérer les statistiques groupées par type de transaction.
+    
+    Retours
+    -------
+    list[TypeStats]
+        Liste des statistiques par type de transaction.
+    
+    Lève
+    ----
+    HTTPException
+        En cas d'erreur lors de la récupération.
+    """
     try:
         service = get_service()
         return service.get_stats_by_type()
@@ -70,7 +132,18 @@ async def get_stats_by_type() -> list[TypeStats]:
 
 @router.get("/daily", response_model=list[dict])
 async def get_daily_stats() -> list[dict]:
-    """Get daily statistics grouped by date."""
+    """Récupérer les statistiques quotidiennes groupées par date.
+    
+    Retours
+    -------
+    list[dict]
+        Liste des statistiques quotidiennes.
+    
+    Lève
+    ----
+    HTTPException
+        En cas d'erreur lors de la récupération.
+    """
     try:
         service = get_service()
         return service.get_daily_stats()

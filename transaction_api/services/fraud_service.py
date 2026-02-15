@@ -1,4 +1,13 @@
-"""Fraud detection service for business logic."""
+"""Service de détection de fraude pour la logique métier.
+
+Ce module fournit la classe FraudService qui gère les opérations de détection de fraude,
+y compris l'analyse des transactions frauduleuses et la prédiction des risques de fraude.
+
+Classes
+-------
+FraudService
+    Service pour les opérations de détection de fraude.
+"""
 
 from typing import List
 
@@ -15,14 +24,45 @@ logger = get_logger(__name__)
 
 
 class FraudService:
-    """Service for fraud detection operations."""
+    """Service pour les opérations de détection de fraude.
+    
+    Gère les opérations de détection de fraude, y compris l'analyse des transactions
+    frauduleuses, le calcul des taux de fraude et la prédiction des risques de fraude.
+    
+    Attributs
+    ---------
+    repository : TransactionRepository
+        Le référentiel de transactions utilisé pour accéder aux données.
+    """
 
     def __init__(self, repository: TransactionRepository) -> None:
-        """Initialize the service."""
+        """Initialiser le service.
+        
+        Paramètres
+        ----------
+        repository : TransactionRepository
+            Le référentiel de transactions pour accéder aux données.
+        """
         self.repository = repository
 
     def get_fraud_summary(self) -> FraudSummary:
-        """Get fraud detection summary."""
+        """Récupérer le résumé de la détection de fraude.
+        
+        Calcule et retourne un résumé des statistiques de fraude, y compris le nombre
+        total de transactions frauduleuses, le taux de fraude et le montant total frauduleux.
+        
+        Retours
+        -------
+        FraudSummary
+            Résumé contenant les statistiques de fraude.
+        
+        Exemples
+        --------
+        >>> service = FraudService(repository)
+        >>> summary = service.get_fraud_summary()
+        >>> summary.fraud_rate
+        0.05
+        """
         transactions = self.repository.get_all_transactions()
         fraud_transactions = self.repository.get_fraud_transactions()
 
@@ -41,7 +81,23 @@ class FraudService:
         )
 
     def get_fraud_by_type(self) -> List[FraudTypeStats]:
-        """Get fraud statistics grouped by use_chip type."""
+        """Récupérer les statistiques de fraude groupées par type de transaction.
+        
+        Calcule les statistiques de fraude pour chaque type de transaction (use_chip),
+        y compris le nombre de fraudes et le taux de fraude.
+        
+        Retours
+        -------
+        List[FraudTypeStats]
+            Liste des statistiques de fraude par type, triée par taux de fraude décroissant.
+        
+        Exemples
+        --------
+        >>> service = FraudService(repository)
+        >>> stats = service.get_fraud_by_type()
+        >>> stats[0].fraud_rate >= stats[1].fraud_rate
+        True
+        """
         use_chip_types = self.repository.get_all_use_chip_types()
         fraud_stats = []
 
@@ -71,14 +127,49 @@ class FraudService:
         return fraud_stats
 
     def predict_fraud(self, transaction: Transaction) -> FraudPrediction:
-        """Predict fraud risk for a transaction."""
+        """Prédire le risque de fraude pour une transaction.
+        
+        Analyse une transaction et calcule un score de risque de fraude basé sur
+        plusieurs indicateurs, puis génère une explication du résultat.
+        
+        Paramètres
+        ----------
+        transaction : Transaction
+            La transaction à analyser.
+        
+        Retours
+        -------
+        FraudPrediction
+            Prédiction contenant le score de fraude et le raisonnement.
+        
+        Exemples
+        --------
+        >>> service = FraudService(repository)
+        >>> prediction = service.predict_fraud(transaction)
+        >>> prediction.fraud_score
+        0.8
+        """
         score = self._calculate_fraud_score(transaction)
         reasoning = self._generate_reasoning(transaction, score)
 
         return FraudPrediction(fraud_score=score, reasoning=reasoning)
 
     def _calculate_fraud_score(self, transaction: Transaction) -> float:
-        """Calculate fraud score for a transaction."""
+        """Calculer le score de fraude pour une transaction.
+        
+        Calcule un score de fraude entre 0.0 et 1.0 basé sur plusieurs indicateurs
+        tels que la présence d'erreurs, le montant et l'utilisation de la puce.
+        
+        Paramètres
+        ----------
+        transaction : Transaction
+            La transaction à analyser.
+        
+        Retours
+        -------
+        float
+            Score de fraude entre 0.0 (pas de fraude) et 1.0 (fraude certaine).
+        """
         score = 0.0
 
         # Check if transaction has errors field
@@ -101,7 +192,23 @@ class FraudService:
     def _generate_reasoning(
         self, transaction: Transaction, score: float
     ) -> str:
-        """Generate reasoning for fraud prediction."""
+        """Générer le raisonnement pour la prédiction de fraude.
+        
+        Génère une explication textuelle des indicateurs de fraude détectés
+        pour justifier le score de fraude calculé.
+        
+        Paramètres
+        ----------
+        transaction : Transaction
+            La transaction analysée.
+        score : float
+            Le score de fraude calculé.
+        
+        Retours
+        -------
+        str
+            Explication textuelle du raisonnement de la prédiction.
+        """
         reasons = []
 
         if transaction.errors:

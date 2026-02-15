@@ -1,4 +1,13 @@
-"""Transaction service for business logic."""
+"""Service de transactions pour la logique métier.
+
+Ce module fournit la classe TransactionService qui gère les opérations liées aux transactions,
+y compris la récupération, la recherche, la suppression et l'analyse des transactions.
+
+Classes
+-------
+TransactionService
+    Service pour les opérations sur les transactions.
+"""
 
 from typing import List
 
@@ -19,16 +28,52 @@ logger = get_logger(__name__)
 
 
 class TransactionService:
-    """Service for transaction operations."""
+    """Service pour les opérations sur les transactions.
+    
+    Gère les opérations liées aux transactions, y compris la récupération,
+    la recherche avec filtres, la suppression et l'analyse des transactions.
+    
+    Attributs
+    ---------
+    repository : TransactionRepository
+        Le référentiel de transactions utilisé pour accéder aux données.
+    """
 
     def __init__(self, repository: TransactionRepository) -> None:
-        """Initialize the service."""
+        """Initialiser le service.
+        
+        Paramètres
+        ----------
+        repository : TransactionRepository
+            Le référentiel de transactions pour accéder aux données.
+        """
         self.repository = repository
 
     def get_all_transactions(
         self, page: int = 1, limit: int = 50
     ) -> PaginatedResponse[Transaction]:
-        """Get all transactions with pagination."""
+        """Récupérer toutes les transactions avec pagination.
+        
+        Récupère une liste paginée de toutes les transactions, triées par date
+        en ordre décroissant.
+        
+        Paramètres
+        ----------
+        page : int, optionnel
+            Numéro de page (indexé à partir de 1). Par défaut 1.
+        limit : int, optionnel
+            Nombre d'éléments par page. Par défaut 50.
+        
+        Retours
+        -------
+        PaginatedResponse[Transaction]
+            Réponse paginée contenant les transactions.
+        
+        Lève
+        ----
+        InvalidPaginationParameters
+            Si les paramètres de pagination sont invalides.
+        """
         try:
             page, limit = PaginationService.validate_pagination_params(
                 page, limit
@@ -45,7 +90,32 @@ class TransactionService:
         )
     
     def get_transaction_by_id(self, transaction_id: str) -> Transaction:
-        """Get a transaction by ID."""
+        """Récupérer une transaction par son identifiant.
+        
+        Récupère une transaction spécifique en utilisant son identifiant unique.
+        
+        Paramètres
+        ----------
+        transaction_id : str
+            L'identifiant unique de la transaction.
+        
+        Retours
+        -------
+        Transaction
+            L'objet transaction demandé.
+        
+        Lève
+        ----
+        TransactionNotFound
+            Si la transaction n'existe pas.
+        
+        Exemples
+        --------
+        >>> service = TransactionService(repository)
+        >>> transaction = service.get_transaction_by_id("TX001")
+        >>> transaction.amount
+        100.50
+        """
         transaction = self.repository.get_by_id(transaction_id)
         if transaction is None:
             logger.warning(f"Transaction not found: {transaction_id}")
@@ -56,7 +126,30 @@ class TransactionService:
     def search_transactions(
         self, filters: SearchFilters, page: int = 1, limit: int = 50
     ) -> PaginatedResponse[Transaction]:
-        """Search transactions with filters."""
+        """Rechercher des transactions avec des filtres.
+        
+        Recherche les transactions en utilisant les critères de filtrage fournis
+        et retourne les résultats paginés.
+        
+        Paramètres
+        ----------
+        filters : SearchFilters
+            Critères de filtrage pour la recherche.
+        page : int, optionnel
+            Numéro de page (indexé à partir de 1). Par défaut 1.
+        limit : int, optionnel
+            Nombre d'éléments par page. Par défaut 50.
+        
+        Retours
+        -------
+        PaginatedResponse[Transaction]
+            Réponse paginée contenant les transactions filtrées.
+        
+        Lève
+        ----
+        InvalidPaginationParameters
+            Si les paramètres de pagination sont invalides.
+        """
         try:
             page, limit = PaginationService.validate_pagination_params(
                 page, limit
@@ -72,7 +165,20 @@ class TransactionService:
         )
     
     def delete_transaction(self, transaction_id: str) -> None:
-        """Delete a transaction."""
+        """Supprimer une transaction.
+        
+        Supprime une transaction spécifique du référentiel.
+        
+        Paramètres
+        ----------
+        transaction_id : str
+            L'identifiant unique de la transaction à supprimer.
+        
+        Lève
+        ----
+        TransactionNotFound
+            Si la transaction n'existe pas.
+        """
         transaction = self.repository.get_by_id(transaction_id)
         if transaction is None:
             logger.warning(
@@ -86,7 +192,23 @@ class TransactionService:
         logger.info(f"Deleted transaction: {transaction_id}")
 
     def get_transaction_types(self) -> List[dict]:
-        """Get all transaction types (use_chip) with counts."""
+        """Récupérer tous les types de transactions avec les comptages.
+        
+        Récupère tous les types de transactions (use_chip) uniques avec le nombre
+        de transactions pour chaque type.
+        
+        Retours
+        -------
+        List[dict]
+            Liste de dictionnaires contenant le type et le nombre de transactions.
+        
+        Exemples
+        --------
+        >>> service = TransactionService(repository)
+        >>> types = service.get_transaction_types()
+        >>> types[0]["type"]
+        'Swipe Transaction'
+        """
         use_chip_types = self.repository.get_all_use_chip_types()
         type_stats: List[dict] = []
         
@@ -106,7 +228,25 @@ class TransactionService:
     def get_recent_transactions(
         self, limit: int = 50
     ) -> PaginatedResponse[Transaction]:
-        """Get recent transactions."""
+        """Récupérer les transactions récentes.
+        
+        Récupère les transactions les plus récentes jusqu'à la limite spécifiée.
+        
+        Paramètres
+        ----------
+        limit : int, optionnel
+            Nombre maximum de transactions à retourner. Par défaut 50.
+        
+        Retours
+        -------
+        PaginatedResponse[Transaction]
+            Réponse paginée contenant les transactions récentes.
+        
+        Lève
+        ----
+        InvalidPaginationParameters
+            Si la limite est invalide.
+        """
         try:
             _, limit = PaginationService.validate_pagination_params(1, limit)
         except InvalidPaginationParameters as e:
@@ -123,7 +263,29 @@ class TransactionService:
     def get_customer_transactions(
         self, customer_id: str, page: int = 1, limit: int = 50
     ) -> PaginatedResponse[Transaction]:
-        """Get transactions for a customer."""
+        """Récupérer les transactions d'un client.
+        
+        Récupère toutes les transactions d'un client spécifique avec pagination.
+        
+        Paramètres
+        ----------
+        customer_id : str
+            L'identifiant unique du client.
+        page : int, optionnel
+            Numéro de page (indexé à partir de 1). Par défaut 1.
+        limit : int, optionnel
+            Nombre d'éléments par page. Par défaut 50.
+        
+        Retours
+        -------
+        PaginatedResponse[Transaction]
+            Réponse paginée contenant les transactions du client.
+        
+        Lève
+        ----
+        InvalidPaginationParameters
+            Si les paramètres de pagination sont invalides.
+        """
         try:
             page, limit = PaginationService.validate_pagination_params(
                 page, limit
@@ -142,7 +304,29 @@ class TransactionService:
     def get_merchant_transactions(
         self, merchant_id: str, page: int = 1, limit: int = 50
     ) -> PaginatedResponse[Transaction]:
-        """Get transactions for a merchant."""
+        """Récupérer les transactions d'un commerçant.
+        
+        Récupère toutes les transactions d'un commerçant spécifique avec pagination.
+        
+        Paramètres
+        ----------
+        merchant_id : str
+            L'identifiant unique du commerçant.
+        page : int, optionnel
+            Numéro de page (indexé à partir de 1). Par défaut 1.
+        limit : int, optionnel
+            Nombre d'éléments par page. Par défaut 50.
+        
+        Retours
+        -------
+        PaginatedResponse[Transaction]
+            Réponse paginée contenant les transactions du commerçant.
+        
+        Lève
+        ----
+        InvalidPaginationParameters
+            Si les paramètres de pagination sont invalides.
+        """
         try:
             page, limit = PaginationService.validate_pagination_params(
                 page, limit

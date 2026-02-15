@@ -1,4 +1,20 @@
-"""Customer API routes."""
+"""Routes de l'API des clients.
+
+Ce module définit tous les points de terminaison (endpoints) de l'API pour les opérations
+sur les clients, y compris la récupération de tous les clients, les détails des clients
+et l'identification des meilleurs clients.
+
+Fonctions
+---------
+get_service()
+    Obtenir une instance du service client.
+get_all_customers(page, limit)
+    Récupérer tous les clients avec pagination.
+get_customer_details(customer_id)
+    Récupérer les détails d'un client spécifique.
+get_top_customers(n)
+    Récupérer les n meilleurs clients.
+"""
 
 from fastapi import (
     APIRouter,
@@ -23,7 +39,18 @@ router: APIRouter = APIRouter(prefix="/api/customers", tags=["customers"])
 
 
 def get_service() -> CustomerService:
-    """Get customer service instance."""
+    """Obtenir une instance du service client.
+    
+    Retours
+    -------
+    CustomerService
+        Instance du service client.
+    
+    Lève
+    ----
+    HTTPException
+        Si le référentiel n'est pas initialisé.
+    """
     if app_context.repository is None:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -37,7 +64,25 @@ async def get_all_customers(
     page: int = Query(1, ge=1),
     limit: int = Query(50, ge=1, le=1000),
 ) -> PaginatedResponse[CustomerSummary]:
-    """Get all customers with pagination."""
+    """Récupérer tous les clients avec pagination.
+    
+    Paramètres
+    ----------
+    page : int
+        Numéro de page (indexé à partir de 1).
+    limit : int
+        Nombre d'éléments par page.
+    
+    Retours
+    -------
+    PaginatedResponse[CustomerSummary]
+        Réponse paginée contenant les résumés des clients.
+    
+    Lève
+    ----
+    HTTPException
+        En cas d'erreur lors de la récupération.
+    """
     try:
         service = get_service()
         return service.get_all_customers(page=page, limit=limit)
@@ -51,7 +96,23 @@ async def get_all_customers(
 
 @router.get("/{customer_id}", response_model=Customer)
 async def get_customer_details(customer_id: str) -> Customer:
-    """Get details for a specific customer."""
+    """Récupérer les détails d'un client spécifique.
+    
+    Paramètres
+    ----------
+    customer_id : str
+        L'identifiant unique du client.
+    
+    Retours
+    -------
+    Customer
+        Objet contenant les détails du client.
+    
+    Lève
+    ----
+    HTTPException
+        En cas d'erreur lors de la récupération.
+    """
     try:
         service = get_service()
         return service.get_customer_details(customer_id)
@@ -72,7 +133,23 @@ async def get_top_customers(
         description="Number of top customers",
     ),
 ) -> list[TopCustomer]:
-    """Get top n customers by transaction count."""
+    """Récupérer les n meilleurs clients par nombre de transactions.
+    
+    Paramètres
+    ----------
+    n : int
+        Nombre de meilleurs clients à retourner.
+    
+    Retours
+    -------
+    list[TopCustomer]
+        Liste des n meilleurs clients.
+    
+    Lève
+    ----
+    HTTPException
+        En cas d'erreur lors de la récupération.
+    """
     try:
         service = get_service()
         return service.get_top_customers(n=n)

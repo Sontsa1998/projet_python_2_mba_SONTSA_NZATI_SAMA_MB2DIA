@@ -1,4 +1,17 @@
-"""System API routes."""
+"""Routes de l'API système.
+
+Ce module définit tous les points de terminaison (endpoints) de l'API pour les opérations
+système, y compris les vérifications de santé et la récupération des métadonnées.
+
+Fonctions
+---------
+get_service()
+    Obtenir une instance du service de santé.
+get_health_status()
+    Récupérer l'état de santé du système.
+get_system_metadata()
+    Récupérer les métadonnées du système.
+"""
 
 from fastapi import APIRouter, HTTPException, status
 
@@ -13,7 +26,18 @@ router: APIRouter = APIRouter(prefix="/api/system", tags=["system"])
 
 
 def get_service() -> HealthService:
-    """Get health service instance."""
+    """Obtenir une instance du service de santé.
+    
+    Retours
+    -------
+    HealthService
+        Instance du service de santé.
+    
+    Lève
+    ----
+    HTTPException
+        Si le référentiel n'est pas initialisé.
+    """
     if app_context.repository is None:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -24,7 +48,18 @@ def get_service() -> HealthService:
 
 @router.get("/health", response_model=HealthStatus)
 async def get_health_status() -> HealthStatus:
-    """Get system health status."""
+    """Récupérer l'état de santé du système.
+    
+    Retours
+    -------
+    HealthStatus
+        Objet contenant l'état de santé et le temps de réponse.
+    
+    Lève
+    ----
+    HTTPException
+        En cas d'erreur lors de la vérification.
+    """
     try:
         service = get_service()
         return service.check_health()
@@ -38,7 +73,18 @@ async def get_health_status() -> HealthStatus:
 
 @router.get("/metadata", response_model=SystemMetadata)
 async def get_system_metadata() -> SystemMetadata:
-    """Get system metadata."""
+    """Récupérer les métadonnées du système.
+    
+    Retours
+    -------
+    SystemMetadata
+        Objet contenant les métadonnées du système.
+    
+    Lève
+    ----
+    HTTPException
+        En cas d'erreur lors de la récupération.
+    """
     try:
         service = get_service()
         return service.get_metadata()
