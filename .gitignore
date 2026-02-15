@@ -3,3 +3,5 @@ data/
 __pycache__/
 transaction_api/__pycache__/
 transaction_api.log
+.pytest_cache/
+.hypothesis/
