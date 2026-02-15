@@ -3,7 +3,6 @@
 import pytest
 from transaction_api.repository import TransactionRepository
 
-
 @pytest.fixture(scope="module")
 def repository():
     """Create repository with test data."""

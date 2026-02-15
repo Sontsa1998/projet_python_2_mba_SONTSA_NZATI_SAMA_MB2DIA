@@ -241,7 +241,7 @@ La couverture de tests est >= 80% pour tous les modules:
 - **transaction_api/services/statistics_service.py**: 94%
 - **transaction_api/services/transaction_service.py**: 79%
 
-**Couverture globale: 82%**
+**Couverture globale: 90%**
 
 ### Exécuter les tests
 
@@ -250,7 +250,7 @@ La couverture de tests est >= 80% pour tous les modules:
 python -m pytest tests/ -v
 
 # Avec rapport de couverture
-python -m pytest tests/ --cov=transaction_api --cov-report=term-missing
+python -m pytest tests/ --cov
 
 # Tests d'intégration uniquement
 python -m pytest tests/integration/ -v
