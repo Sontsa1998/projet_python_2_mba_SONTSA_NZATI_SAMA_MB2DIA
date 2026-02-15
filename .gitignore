@@ -11,3 +11,5 @@ properties/__pycache__/
 unit/__pycache__/
 .coverage
 .kiro/
+projet_python.pdf
+transaction_api.egg-info

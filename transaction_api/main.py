@@ -24,6 +24,7 @@ health_check()
 from contextlib import asynccontextmanager
 from datetime import datetime
 
+import uvicorn
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
@@ -267,6 +268,15 @@ async def health_check():
     """
     return {"status": "ok"}
 
+def run() -> None:
+    """Launch the FastAPI application using Uvicorn."""
+    uvicorn.run(
+        "transaction_api.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=False,
+    )
+
 
 # Include routers
 app.include_router(transaction_router)
@@ -279,4 +289,5 @@ app.include_router(system_router)
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("transaction_api.main:app", host="0.0.0.0", port=8000)
+    

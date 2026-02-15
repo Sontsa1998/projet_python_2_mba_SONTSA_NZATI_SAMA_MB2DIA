@@ -39,7 +39,8 @@ transaction-api/
 │   └── conftest.py                    # Configuration pytest
 ├── data/                              # Données de test
 │   └── transactions.csv               # Fichier de données de test
-├── app.py                             # Interface Streamlit
+├── streamlit_app                      # Application Streamlit du projet
+|   └── app.py                         # Interface Streamlit
 ├── setup.py                           # Configuration setuptools
 ├── pyproject.toml                     # Configuration moderne du projet
 ├── MANIFEST.in                        # Fichiers à inclure dans le package
@@ -152,7 +153,7 @@ transactions = repo.get_all_transactions()
 
 ### Lancer l'interface Streamlit
 ```bash
-streamlit run app.py
+streamlit run streamlit_app/app.py
 ```
 
 ## Dépendances

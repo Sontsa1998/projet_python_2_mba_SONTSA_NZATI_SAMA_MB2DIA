@@ -90,7 +90,7 @@ transactions = repo.get_all_transactions()
 ### Lancer l'interface Streamlit
 
 ```bash
-streamlit run app.py
+streamlit run streamlit_app/app.py
 ```
 
 ## Vérification de l'installation

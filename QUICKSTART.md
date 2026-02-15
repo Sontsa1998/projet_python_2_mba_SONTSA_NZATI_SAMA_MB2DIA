@@ -35,7 +35,7 @@ python -m uvicorn transaction_api.main:app --reload --workers 1
 
 Terminal 2 - Démarrer Streamlit:
 ```bash
-streamlit run app.py
+streamlit run streamlit_app/app.py
 ```
 
 ## Accès aux Applications
@@ -81,7 +81,8 @@ pytest tests/unit/ -v
 ## 📁 Structure des Fichiers Importants
 
 ```
-├── app.py                    # Application Streamlit
+├── streamlit_app             # Dossier application streamlit
+|   ├── app.py                # Application Streamlit
 ├── requirements.txt          # Dépendances Python
 ├── README.md                 # Documentation complète
 ├── QUICKSTART.md            # Ce fichier

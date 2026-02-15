@@ -63,7 +63,7 @@ Documentation interactive (Swagger): `http://localhost:8000/docs`
 ### Démarrer l'Interface Streamlit
 
 ```bash
-streamlit run app.py
+streamlit run streamlit_app/app.py
 ```
 
 L'interface sera disponible à: `http://localhost:8501`
@@ -216,8 +216,8 @@ tests/
 
 data/
 └── transactions.csv        # Données de transactions
-
-app.py                       # Application Streamlit
+streamlit_app/
+└── app.py                       # Application Streamlit
 ```
 
 ## ✅ Couverture de Tests

@@ -62,7 +62,7 @@ run:
 	uvicorn transaction_api.main:app --reload --host 0.0.0.0 --port 8000
 
 run-ui:
-	streamlit run app.py
+	streamlit run streamlit_app/app.py
 
 docs:
 	@echo "Génération de la documentation..."

@@ -5,7 +5,7 @@ Ce fichier décrit les variables CI et l'utilisation du pipeline défini dans `.
 Jobs principaux
 - `test`: installe les dépendances et lance `pytest` (génère `reports/junit.xml`).
 - `build`: construit et pousse l'image Docker vers le registre GitLab (`$CI_REGISTRY_IMAGE`).
-- `deploy`: exécute un déploiement manuel vers l'environnement `production` via SSH (tire l'image `latest` puis relance `docker-compose`).
+
 
 Variables CI attendues (à définir dans Settings → CI / CD → Variables)
 - `CI_REGISTRY_USER`: (souvent configuré automatiquement) nom d'utilisateur du registre.
@@ -16,11 +16,6 @@ Variables CI attendues (à définir dans Settings → CI / CD → Variables)
 - `PROD_SSH_USER`: utilisateur SSH sur le serveur de production.
 - `PROD_SSH_PORT`: port SSH si différent de 22 (optionnel).
 
-Points d'attention
-- Le job `deploy` exécute la commande `docker-compose -f /path/to/docker-compose.yml up -d --remove-orphans` sur le serveur: adaptez le chemin `/path/to/docker-compose.yml` au chemin réel du serveur.
-- Le job `deploy` est `manual` et restreint aux branches `main`/`master`.
-- Pour utiliser le Container Registry GitLab, activez-le dans votre projet et autorisez le Runner à pousser des images (variables CI `CI_REGISTRY_USER` / `CI_REGISTRY_PASSWORD` ou token CI).
-- Si votre Runner est auto-hébergé sans Docker-in-Docker, adaptez le job `build` (par ex. build localement et push depuis un runner avec Docker configuré).
 
 Tester localement
 - Exécuter les tests unitaires localement:
