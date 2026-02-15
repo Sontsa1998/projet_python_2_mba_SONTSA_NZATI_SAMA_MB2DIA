@@ -1,49 +1,49 @@
-"""Pydantic models for the Transaction API.
+"""Modèles Pydantic pour l'API Transaction.
 
-This module defines all Pydantic data models used throughout the Transaction API,
-including transaction data, pagination metadata, statistics, fraud detection,
-and customer information models.
+Ce module définit tous les modèles de données Pydantic utilisés dans l'API Transaction,
+y compris les données de transaction, les métadonnées de pagination, les statistiques,
+la détection de fraude et les informations sur les clients.
 
 Classes
 -------
 Transaction
-    Represents a single transaction record with all associated details.
+    Représente un enregistrement de transaction unique avec tous les détails associés.
 PaginationMetadata
-    Contains pagination information for paginated responses.
+    Contient les informations de pagination pour les réponses paginées.
 PaginatedResponse
-    Generic paginated response wrapper for any data type.
+    Wrapper de réponse paginée générique pour tout type de données.
 OverviewStats
-    Overview statistics for all transactions.
+    Statistiques générales pour toutes les transactions.
 AmountBucket
-    Represents a bucket in amount distribution analysis.
+    Représente un bucket dans l'analyse de distribution des montants.
 AmountDistribution
-    Amount distribution statistics across buckets.
+    Statistiques de distribution des montants par buckets.
 TypeStats
-    Statistics for a specific transaction type.
+    Statistiques pour un type de transaction spécifique.
 DailyStats
-    Daily transaction statistics.
+    Statistiques quotidiennes des transactions.
 FraudSummary
-    Summary of fraud detection results.
+    Résumé des résultats de détection de fraude.
 FraudTypeStats
-    Fraud statistics broken down by transaction type.
+    Statistiques de fraude ventilées par type de transaction.
 FraudUseChipStats
-    Fraud statistics broken down by use_chip type.
+    Statistiques de fraude ventilées par type use_chip.
 FraudPrediction
-    Result of fraud prediction for a transaction.
+    Résultat de la prédiction de fraude pour une transaction.
 Customer
-    Customer details and transaction summary.
+    Détails du client et résumé des transactions.
 TopCustomer
-    Summary of a top customer by transaction volume.
+    Résumé d'un client principal par volume de transactions.
 CustomerSummary
-    Basic customer summary information.
+    Informations de résumé client de base.
 HealthStatus
-    System health status information.
+    Informations d'état de santé du système.
 SystemMetadata
-    System-wide metadata and statistics.
+    Métadonnées du système et statistiques.
 ErrorResponse
-    Standard error response format.
+    Format de réponse d'erreur standard.
 SearchFilters
-    Search filter parameters for transaction queries.
+    Paramètres de filtre de recherche pour les requêtes de transactions.
 """
 
 from datetime import date as date_type
@@ -56,39 +56,40 @@ T = TypeVar("T")
 
 
 class Transaction(BaseModel):
-    """Transaction data model.
+    """Modèle de données de transaction.
     
-    Represents a single transaction record with all associated details including
-    date, customer information, card details, merchant information, and amount.
+    Représente un enregistrement de transaction unique avec tous les détails associés,
+    y compris la date, les informations du client, les détails de la carte, les
+    informations du commerçant et le montant.
     
-    Attributes
-    ----------
+    Attributs
+    ---------
     id : str
-        Unique transaction identifier.
+        Identifiant unique de la transaction.
     date : datetime
-        Date and time when the transaction occurred.
+        Date et heure d'occurrence de la transaction.
     client_id : str
-        Identifier of the client/customer making the transaction.
+        Identifiant du client/consommateur effectuant la transaction.
     card_id : str
-        Identifier of the card used for the transaction.
+        Identifiant de la carte utilisée pour la transaction.
     amount : float
-        Transaction amount in currency units.
+        Montant de la transaction en unités monétaires.
     use_chip : str
-        Type of transaction (e.g., "Swipe Transaction", "Chip Transaction").
+        Type de transaction (ex: "Swipe Transaction", "Chip Transaction").
     merchant_id : str
-        Identifier of the merchant where transaction occurred.
+        Identifiant du commerçant où la transaction a eu lieu.
     merchant_city : str
-        City where the merchant is located.
+        Ville où le commerçant est situé.
     merchant_state : str
-        State/province where the merchant is located.
+        État/province où le commerçant est situé.
     zip : str
-        ZIP/postal code of the merchant location.
+        Code postal du lieu du commerçant.
     mcc : str
-        Merchant Category Code for classification.
-    errors : str, optional
-        Error flag indicating if transaction has errors.
+        Code de catégorie de commerçant pour la classification.
+    errors : str, optionnel
+        Indicateur d'erreur signalant si la transaction a des erreurs.
     
-    Examples
+    Exemples
     --------
     >>> transaction = Transaction(
     ...     id="1",
@@ -120,9 +121,9 @@ class Transaction(BaseModel):
     errors: Optional[str] = Field(None, description="Error flag")
 
     class Config:
-        """Pydantic configuration for Transaction model.
+        """Configuration Pydantic pour le modèle Transaction.
         
-        Provides JSON schema example for API documentation.
+        Fournit un exemple de schéma JSON pour la documentation de l'API.
         """
 
         json_schema_extra = {
@@ -144,23 +145,23 @@ class Transaction(BaseModel):
 
 
 class PaginationMetadata(BaseModel):
-    """Pagination metadata.
+    """Métadonnées de pagination.
     
-    Contains information about pagination state including current page,
-    limit, total counts, and navigation indicators.
+    Contient les informations sur l'état de la pagination, y compris la page actuelle,
+    la limite, les totaux et les indicateurs de navigation.
     
-    Attributes
-    ----------
+    Attributs
+    ---------
     page : int
-        Current page number (1-indexed).
+        Numéro de page actuel (indexé à partir de 1).
     limit : int
-        Number of items per page.
+        Nombre d'éléments par page.
     total_count : int
-        Total number of items across all pages.
+        Nombre total d'éléments sur toutes les pages.
     total_pages : int
-        Total number of pages available.
+        Nombre total de pages disponibles.
     has_next_page : bool
-        Whether there is a next page available.
+        Indique s'il y a une page suivante disponible.
     """
 
     page: int = Field(..., description="Current page number")
@@ -171,18 +172,19 @@ class PaginationMetadata(BaseModel):
 
 
 class PaginatedResponse(BaseModel, Generic[T]):
-    """Generic paginated response.
+    """Réponse paginée générique.
     
-    Wraps a list of items with pagination metadata for paginated API responses.
+    Enveloppe une liste d'éléments avec les métadonnées de pagination pour les
+    réponses API paginées.
     
-    Attributes
-    ----------
+    Attributs
+    ---------
     data : List[T]
-        List of items for the current page.
+        Liste d'éléments pour la page actuelle.
     pagination : PaginationMetadata
-        Pagination information and navigation details.
+        Informations de pagination et détails de navigation.
     
-    Examples
+    Exemples
     --------
     >>> response = PaginatedResponse(
     ...     data=[item1, item2],
@@ -198,22 +200,22 @@ class PaginatedResponse(BaseModel, Generic[T]):
 
 
 class OverviewStats(BaseModel):
-    """Overview statistics.
+    """Statistiques d'aperçu.
     
-    Provides high-level statistics about all transactions in the system.
+    Fournit des statistiques de haut niveau sur toutes les transactions du système.
     
-    Attributes
-    ----------
+    Attributs
+    ---------
     total_count : int
-        Total number of transactions.
+        Nombre total de transactions.
     total_amount : float
-        Sum of all transaction amounts.
+        Somme de tous les montants de transaction.
     average_amount : float
-        Average transaction amount.
+        Montant moyen de transaction.
     min_date : datetime
-        Earliest transaction date.
+        Date de transaction la plus ancienne.
     max_date : datetime
-        Latest transaction date.
+        Date de transaction la plus récente.
     """
 
     total_count: int = Field(..., description="Total transactions")
@@ -224,18 +226,18 @@ class OverviewStats(BaseModel):
 
 
 class AmountBucket(BaseModel):
-    """Amount distribution bucket.
+    """Bucket de distribution des montants.
     
-    Represents a single bucket in the amount distribution analysis.
+    Représente un seul bucket dans l'analyse de distribution des montants.
     
-    Attributes
-    ----------
+    Attributs
+    ---------
     range : str
-        Label describing the amount range (e.g., "0-100").
+        Étiquette décrivant la plage de montants (ex: "0-100").
     count : int
-        Number of transactions in this bucket.
+        Nombre de transactions dans ce bucket.
     percentage : float
-        Percentage of total transactions in this bucket.
+        Pourcentage du total des transactions dans ce bucket.
     """
 
     range: str = Field(..., description="Range label")
@@ -244,34 +246,34 @@ class AmountBucket(BaseModel):
 
 
 class AmountDistribution(BaseModel):
-    """Amount distribution statistics.
+    """Statistiques de distribution des montants.
     
-    Contains distribution of transactions across amount buckets.
+    Contient la distribution des transactions sur les buckets de montants.
     
-    Attributes
-    ----------
+    Attributs
+    ---------
     buckets : List[AmountBucket]
-        List of amount distribution buckets.
+        Liste des buckets de distribution des montants.
     """
 
     buckets: List[AmountBucket] = Field(..., description="Buckets")
 
 
 class TypeStats(BaseModel):
-    """Statistics for a transaction type.
+    """Statistiques pour un type de transaction.
     
-    Provides statistics for a specific transaction type.
+    Fournit des statistiques pour un type de transaction spécifique.
     
-    Attributes
-    ----------
+    Attributs
+    ---------
     type : str
-        Transaction type identifier.
+        Identifiant du type de transaction.
     count : int
-        Number of transactions of this type.
+        Nombre de transactions de ce type.
     total_amount : float
-        Sum of amounts for this transaction type.
+        Somme des montants pour ce type de transaction.
     average_amount : float
-        Average amount for this transaction type.
+        Montant moyen pour ce type de transaction.
     """
 
     type: str = Field(..., description="Transaction type")
@@ -281,20 +283,20 @@ class TypeStats(BaseModel):
 
 
 class DailyStats(BaseModel):
-    """Daily statistics.
+    """Statistiques quotidiennes.
     
-    Provides transaction statistics for a specific day.
+    Fournit les statistiques de transaction pour un jour spécifique.
     
-    Attributes
-    ----------
+    Attributs
+    ---------
     date : date_type
-        The date for these statistics.
+        La date pour ces statistiques.
     count : int
-        Number of transactions on this date.
+        Nombre de transactions à cette date.
     total_amount : float
-        Sum of transaction amounts on this date.
+        Somme des montants de transaction à cette date.
     average_amount : float
-        Average transaction amount on this date.
+        Montant moyen de transaction à cette date.
     """
 
     date: date_type = Field(..., description="Date")
@@ -304,18 +306,18 @@ class DailyStats(BaseModel):
 
 
 class FraudSummary(BaseModel):
-    """Fraud detection summary.
+    """Résumé de détection de fraude.
     
-    Provides overall fraud detection statistics.
+    Fournit les statistiques globales de détection de fraude.
     
-    Attributes
-    ----------
+    Attributs
+    ---------
     total_fraud_count : int
-        Total number of fraudulent transactions detected.
+        Nombre total de transactions frauduleuses détectées.
     fraud_rate : float
-        Percentage of transactions flagged as fraudulent.
+        Pourcentage de transactions signalées comme frauduleuses.
     total_fraud_amount : float
-        Sum of amounts in fraudulent transactions.
+        Somme des montants dans les transactions frauduleuses.
     """
 
     total_fraud_count: int = Field(..., description="Fraud count")
@@ -324,20 +326,20 @@ class FraudSummary(BaseModel):
 
 
 class FraudTypeStats(BaseModel):
-    """Fraud statistics by type.
+    """Statistiques de fraude par type.
     
-    Provides fraud statistics broken down by transaction type.
+    Fournit les statistiques de fraude ventilées par type de transaction.
     
-    Attributes
-    ----------
+    Attributs
+    ---------
     type : str
-        Transaction type identifier.
+        Identifiant du type de transaction.
     fraud_count : int
-        Number of fraudulent transactions of this type.
+        Nombre de transactions frauduleuses de ce type.
     fraud_rate : float
-        Fraud rate for this transaction type.
+        Taux de fraude pour ce type de transaction.
     total_count : int
-        Total transactions of this type.
+        Total des transactions de ce type.
     """
 
     type: str = Field(..., description="Transaction type")
@@ -347,20 +349,20 @@ class FraudTypeStats(BaseModel):
 
 
 class FraudUseChipStats(BaseModel):
-    """Fraud statistics by use_chip type.
+    """Statistiques de fraude par type use_chip.
     
-    Provides fraud statistics broken down by use_chip type.
+    Fournit les statistiques de fraude ventilées par type use_chip.
     
-    Attributes
-    ----------
+    Attributs
+    ---------
     use_chip : str
-        Use chip type identifier.
+        Identifiant du type use_chip.
     fraud_count : int
-        Number of fraudulent transactions of this use_chip type.
+        Nombre de transactions frauduleuses de ce type use_chip.
     fraud_rate : float
-        Fraud rate for this use_chip type.
+        Taux de fraude pour ce type use_chip.
     total_count : int
-        Total transactions of this use_chip type.
+        Total des transactions de ce type use_chip.
     """
 
     use_chip: str = Field(..., description="use_chip type")
@@ -370,16 +372,16 @@ class FraudUseChipStats(BaseModel):
 
 
 class FraudPrediction(BaseModel):
-    """Fraud prediction result.
+    """Résultat de prédiction de fraude.
     
-    Contains the result of fraud prediction for a transaction.
+    Contient le résultat de la prédiction de fraude pour une transaction.
     
-    Attributes
-    ----------
+    Attributs
+    ---------
     fraud_score : float
-        Fraud probability score between 0.0 and 1.0.
+        Score de probabilité de fraude entre 0.0 et 1.0.
     reasoning : str
-        Explanation of the fraud prediction.
+        Explication de la prédiction de fraude.
     """
 
     fraud_score: float = Field(..., ge=0.0, le=1.0, description="Fraud score")
@@ -387,20 +389,20 @@ class FraudPrediction(BaseModel):
 
 
 class Customer(BaseModel):
-    """Customer details.
+    """Détails du client.
     
-    Provides detailed information about a customer and their transactions.
+    Fournit des informations détaillées sur un client et ses transactions.
     
-    Attributes
-    ----------
+    Attributs
+    ---------
     customer_id : str
-        Unique customer identifier.
+        Identifiant unique du client.
     transaction_count : int
-        Total number of transactions by this customer.
+        Nombre total de transactions par ce client.
     total_amount : float
-        Sum of all transaction amounts by this customer.
+        Somme de tous les montants de transaction par ce client.
     average_amount : float
-        Average transaction amount for this customer.
+        Montant moyen de transaction pour ce client.
     """
 
     customer_id: str = Field(..., description="Customer id")
@@ -410,18 +412,18 @@ class Customer(BaseModel):
 
 
 class TopCustomer(BaseModel):
-    """Top customer summary.
+    """Résumé du client principal.
     
-    Summary information for a top customer by transaction volume.
+    Informations de résumé pour un client principal par volume de transactions.
     
-    Attributes
-    ----------
+    Attributs
+    ---------
     customer_id : str
-        Unique customer identifier.
+        Identifiant unique du client.
     transaction_count : int
-        Number of transactions by this customer.
+        Nombre de transactions par ce client.
     total_amount : float
-        Sum of transaction amounts by this customer.
+        Somme des montants de transaction par ce client.
     """
 
     customer_id: str = Field(..., description="Customer id")
@@ -430,16 +432,16 @@ class TopCustomer(BaseModel):
 
 
 class CustomerSummary(BaseModel):
-    """Customer summary.
+    """Résumé du client.
     
-    Basic summary information for a customer.
+    Informations de résumé de base pour un client.
     
-    Attributes
-    ----------
+    Attributs
+    ---------
     customer_id : str
-        Unique customer identifier.
+        Identifiant unique du client.
     transaction_count : int
-        Number of transactions by this customer.
+        Nombre de transactions par ce client.
     """
 
     customer_id: str = Field(..., description="Customer id")
@@ -447,16 +449,16 @@ class CustomerSummary(BaseModel):
 
 
 class HealthStatus(BaseModel):
-    """System health status.
+    """État de santé du système.
     
-    Indicates the current health status of the system.
+    Indique l'état de santé actuel du système.
     
-    Attributes
-    ----------
+    Attributs
+    ---------
     status : str
-        Health status indicator (e.g., "healthy", "degraded").
+        Indicateur d'état de santé (ex: "healthy", "degraded").
     response_time_ms : float
-        Response time in milliseconds.
+        Temps de réponse en millisecondes.
     """
 
     status: str = Field(..., description="Health status")
@@ -464,22 +466,22 @@ class HealthStatus(BaseModel):
 
 
 class SystemMetadata(BaseModel):
-    """System metadata.
+    """Métadonnées du système.
     
-    Contains system-wide metadata and statistics.
+    Contient les métadonnées et statistiques à l'échelle du système.
     
-    Attributes
-    ----------
+    Attributs
+    ---------
     total_transaction_count : int
-        Total number of transactions in the system.
+        Nombre total de transactions dans le système.
     data_load_date : datetime
-        When the transaction data was loaded.
+        Quand les données de transaction ont été chargées.
     api_version : str
-        Current API version.
+        Version actuelle de l'API.
     min_date : datetime
-        Earliest transaction date in the system.
+        Date de transaction la plus ancienne du système.
     max_date : datetime
-        Latest transaction date in the system.
+        Date de transaction la plus récente du système.
     """
 
     total_transaction_count: int = Field(..., description="Total transactions")
@@ -490,18 +492,18 @@ class SystemMetadata(BaseModel):
 
 
 class ErrorResponse(BaseModel):
-    """Error response.
+    """Réponse d'erreur.
     
-    Standard format for error responses from the API.
+    Format standard pour les réponses d'erreur de l'API.
     
-    Attributes
-    ----------
+    Attributs
+    ---------
     error : str
-        Error message.
-    details : str, optional
-        Additional error details.
+        Message d'erreur.
+    details : str, optionnel
+        Détails d'erreur supplémentaires.
     timestamp : datetime
-        When the error occurred.
+        Quand l'erreur s'est produite.
     """
 
     error: str = Field(..., description="Error message")
@@ -510,24 +512,24 @@ class ErrorResponse(BaseModel):
 
 
 class SearchFilters(BaseModel):
-    """Search filters for transactions.
+    """Filtres de recherche pour les transactions.
     
-    Defines optional filters for transaction search queries.
+    Définit les filtres optionnels pour les requêtes de recherche de transactions.
     
-    Attributes
-    ----------
-    min_amount : float, optional
-        Minimum transaction amount filter.
-    max_amount : float, optional
-        Maximum transaction amount filter.
-    client_id : str, optional
-        Filter by client/customer ID.
-    transaction_id : str, optional
-        Filter by transaction ID.
-    merchant_city : str, optional
-        Filter by merchant city.
-    use_chip : str, optional
-        Filter by transaction type.
+    Attributs
+    ---------
+    min_amount : float, optionnel
+        Filtre de montant minimum de transaction.
+    max_amount : float, optionnel
+        Filtre de montant maximum de transaction.
+    client_id : str, optionnel
+        Filtrer par ID client/consommateur.
+    transaction_id : str, optionnel
+        Filtrer par ID de transaction.
+    merchant_city : str, optionnel
+        Filtrer par ville du commerçant.
+    use_chip : str, optionnel
+        Filtrer par type de transaction.
     """
 
     min_amount: Optional[float] = Field(None, description="Min amount")

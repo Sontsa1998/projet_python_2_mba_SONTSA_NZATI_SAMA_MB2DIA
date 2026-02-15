@@ -1,29 +1,30 @@
-"""Transaction API package.
+"""Paquet API Transaction.
 
-A high-performance FastAPI application for transaction analysis, fraud detection,
-and customer insights. Provides comprehensive REST endpoints for querying transaction
-data with advanced filtering, pagination, and statistical analysis capabilities.
+Une application FastAPI haute performance pour l'analyse de transactions, la détection
+de fraude et les informations sur les clients. Fournit des points de terminaison REST
+complets pour interroger les données de transaction avec des capacités avancées de
+filtrage, pagination et analyse statistique.
 
 Modules
 -------
 main
-    FastAPI application setup and configuration.
+    Configuration et mise en place de l'application FastAPI.
 models
-    Pydantic data models for API requests and responses.
+    Modèles de données Pydantic pour les requêtes et réponses de l'API.
 repository
-    Data access layer for transaction management.
+    Couche d'accès aux données pour la gestion des transactions.
 pagination
-    Pagination utilities and services.
+    Utilitaires et services de pagination.
 exceptions
-    Custom exception classes.
+    Classes d'exception personnalisées.
 config
-    Configuration constants and settings.
+    Constantes de configuration et paramètres.
 logging_config
-    Logging setup and utilities.
+    Configuration de la journalisation et utilitaires.
 app_context
-    Global application context management.
+    Gestion du contexte global de l'application.
 routes
-    API route handlers organized by feature.
+    Gestionnaires de routes API organisés par fonctionnalité.
 services
-    Business logic services.
+    Services de logique métier.
 """

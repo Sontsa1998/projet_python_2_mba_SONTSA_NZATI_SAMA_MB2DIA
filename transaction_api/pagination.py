@@ -1,19 +1,19 @@
-"""Pagination utilities for the Transaction API.
+"""Utilitaires de pagination pour l'API Transaction.
 
-This module provides utilities for handling pagination in API responses,
-including parameter validation and paginated response creation.
+Ce module fournit des utilitaires pour gérer la pagination dans les réponses de l'API,
+y compris la validation des paramètres et la création de réponses paginées.
 
 Classes
 -------
 PaginationService
-    Service for handling pagination operations.
+    Service pour gérer les opérations de pagination.
 
-Functions
+Fonctions
 ---------
 validate_pagination_params(page, limit)
-    Validate pagination parameters.
+    Valider les paramètres de pagination.
 create_paginated_response(data, page, limit, total_count)
-    Create a paginated response with metadata.
+    Créer une réponse paginée avec les métadonnées.
 """
 
 from typing import Generic, List, TypeVar
@@ -26,37 +26,37 @@ T = TypeVar("T")
 
 
 class PaginationService(Generic[T]):
-    """Service for handling pagination.
+    """Service de gestion de la pagination.
     
-    Provides static methods for validating pagination parameters and creating
-    paginated responses with appropriate metadata.
+    Fournit des méthodes statiques pour valider les paramètres de pagination et créer
+    des réponses paginées avec les métadonnées appropriées.
     """
 
     @staticmethod
     def validate_pagination_params(page: int, limit: int) -> tuple[int, int]:
-        """Validate pagination parameters.
+        """Valider les paramètres de pagination.
         
-        Validates that page and limit parameters are within acceptable ranges
-        as defined in the configuration.
+        Valide que les paramètres page et limit sont dans les plages acceptables
+        telles que définies dans la configuration.
         
-        Parameters
+        Paramètres
         ----------
         page : int
-            The page number (1-indexed).
+            Le numéro de page (indexé à partir de 1).
         limit : int
-            The number of items per page.
+            Le nombre d'éléments par page.
         
-        Returns
+        Retours
         -------
         tuple[int, int]
-            Tuple of (page, limit) if validation passes.
+            Tuple de (page, limit) si la validation réussit.
         
-        Raises
-        ------
+        Lève
+        ----
         InvalidPaginationParameters
-            If page is less than 1 or limit is outside the allowed range.
+            Si page est inférieur à 1 ou limit est en dehors de la plage autorisée.
         
-        Examples
+        Exemples
         --------
         >>> page, limit = PaginationService.validate_pagination_params(1, 50)
         >>> page, limit
@@ -74,28 +74,28 @@ class PaginationService(Generic[T]):
     def create_paginated_response(
         data: List[T], page: int, limit: int, total_count: int
     ) -> PaginatedResponse[T]:
-        """Create a paginated response.
+        """Créer une réponse paginée.
         
-        Creates a paginated response object with the provided data and
-        automatically calculated pagination metadata.
+        Crée un objet de réponse paginée avec les données fournies et les
+        métadonnées de pagination calculées automatiquement.
         
-        Parameters
+        Paramètres
         ----------
         data : List[T]
-            List of items for the current page.
+            Liste d'éléments pour la page actuelle.
         page : int
-            Current page number (1-indexed).
+            Numéro de page actuel (indexé à partir de 1).
         limit : int
-            Number of items per page.
+            Nombre d'éléments par page.
         total_count : int
-            Total number of items across all pages.
+            Nombre total d'éléments sur toutes les pages.
         
-        Returns
+        Retours
         -------
         PaginatedResponse[T]
-            Paginated response with data and pagination metadata.
+            Réponse paginée avec les données et les métadonnées de pagination.
         
-        Examples
+        Exemples
         --------
         >>> items = [item1, item2, item3]
         >>> response = PaginationService.create_paginated_response(

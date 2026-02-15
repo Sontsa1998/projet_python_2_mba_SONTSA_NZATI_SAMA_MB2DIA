@@ -1,92 +1,92 @@
-"""Custom exceptions for the Transaction API.
+"""Exceptions personnalisées pour l'API Transaction.
 
-This module defines custom exception classes for the Transaction API, providing
-specific error types for different failure scenarios in the application.
+Ce module définit les classes d'exception personnalisées pour l'API Transaction, fournissant
+des types d'erreur spécifiques pour différents scénarios d'échec dans l'application.
 
 Classes
 -------
 TransactionAPIException
-    Base exception class for all Transaction API exceptions.
+    Classe d'exception de base pour toutes les exceptions de l'API Transaction.
 TransactionNotFound
-    Raised when a requested transaction cannot be found.
+    Levée quand une transaction demandée ne peut pas être trouvée.
 CustomerNotFound
-    Raised when a requested customer cannot be found.
+    Levée quand un client demandé ne peut pas être trouvé.
 InvalidPaginationParameters
-    Raised when pagination parameters are invalid.
+    Levée quand les paramètres de pagination sont invalides.
 InvalidSearchFilters
-    Raised when search filter parameters are invalid.
+    Levée quand les paramètres de filtre de recherche sont invalides.
 DataLoadingError
-    Raised when data loading from CSV fails.
+    Levée quand le chargement des données à partir du CSV échoue.
 InvalidTransactionData
-    Raised when transaction data is invalid or malformed.
+    Levée quand les données de transaction sont invalides ou malformées.
 """
 
 
 class TransactionAPIException(Exception):
-    """Base exception for Transaction API.
+    """Exception de base pour l'API Transaction.
     
-    This is the base exception class for all custom exceptions in the
-    Transaction API. All other custom exceptions inherit from this class.
+    Ceci est la classe d'exception de base pour toutes les exceptions personnalisées
+    dans l'API Transaction. Toutes les autres exceptions personnalisées héritent de cette classe.
     """
 
     pass
 
 
 class TransactionNotFound(TransactionAPIException):
-    """Exception raised when a transaction is not found.
+    """Exception levée quand une transaction n'est pas trouvée.
     
-    This exception is raised when a transaction lookup fails because the
-    requested transaction ID does not exist in the repository.
+    Cette exception est levée quand une recherche de transaction échoue parce que
+    l'ID de transaction demandé n'existe pas dans le référentiel.
     """
 
     pass
 
 
 class CustomerNotFound(TransactionAPIException):
-    """Exception raised when a customer is not found.
+    """Exception levée quand un client n'est pas trouvé.
     
-    This exception is raised when a customer lookup fails because the
-    requested customer ID does not exist in the repository.
+    Cette exception est levée quand une recherche de client échoue parce que
+    l'ID de client demandé n'existe pas dans le référentiel.
     """
 
     pass
 
 
 class InvalidPaginationParameters(TransactionAPIException):
-    """Exception raised when pagination parameters are invalid.
+    """Exception levée quand les paramètres de pagination sont invalides.
     
-    This exception is raised when pagination parameters (page, limit) are
-    outside acceptable ranges or violate validation rules.
+    Cette exception est levée quand les paramètres de pagination (page, limit) sont
+    en dehors des plages acceptables ou violent les règles de validation.
     """
 
     pass
 
 
 class InvalidSearchFilters(TransactionAPIException):
-    """Exception raised when search filters are invalid.
+    """Exception levée quand les filtres de recherche sont invalides.
     
-    This exception is raised when search filter parameters are malformed,
-    contain invalid values, or violate business logic constraints.
+    Cette exception est levée quand les paramètres de filtre de recherche sont malformés,
+    contiennent des valeurs invalides ou violent les contraintes de logique métier.
     """
 
     pass
 
 
 class DataLoadingError(TransactionAPIException):
-    """Exception raised when data loading fails.
+    """Exception levée quand le chargement des données échoue.
     
-    This exception is raised when loading transaction data from the CSV file
-    fails due to file I/O errors, parsing errors, or other data loading issues.
+    Cette exception est levée quand le chargement des données de transaction à partir du fichier CSV
+    échoue en raison d'erreurs d'E/S de fichier, d'erreurs d'analyse ou d'autres problèmes de chargement de données.
     """
 
     pass
 
 
 class InvalidTransactionData(TransactionAPIException):
-    """Exception raised when transaction data is invalid.
+    """Exception levée quand les données de transaction sont invalides.
     
-    This exception is raised when transaction data is malformed, missing required
-    fields, or contains values that violate data validation rules.
+    Cette exception est levée quand les données de transaction sont malformées, manquent de champs requis,
+    ou contiennent des valeurs qui violent les règles de validation des données.
     """
 
     pass

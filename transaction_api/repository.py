@@ -1,13 +1,13 @@
-"""Transaction repository for data access.
+"""Référentiel de transactions pour l'accès aux données.
 
-This module provides the TransactionRepository class for managing transaction data,
-including loading from CSV, indexing, searching, and retrieving transactions with
-various filtering and pagination options.
+Ce module fournit la classe TransactionRepository pour gérer les données de transaction,
+y compris le chargement à partir d'un CSV, l'indexation, la recherche et la récupération
+de transactions avec diverses options de filtrage et de pagination.
 
 Classes
 -------
 TransactionRepository
-    Repository for managing and accessing transaction data.
+    Référentiel pour gérer et accéder aux données de transaction.
 """
 
 import csv
@@ -26,40 +26,40 @@ logger = get_logger(__name__)
 
 
 class TransactionRepository:
-    """Repository for managing transactions.
+    """Référentiel pour gérer les transactions.
     
-    Manages transaction data with multiple indexes for efficient querying by
-    customer, merchant, type, and other attributes. Supports loading from CSV,
-    searching with filters, and pagination.
+    Gère les données de transaction avec plusieurs index pour une interrogation efficace
+    par client, commerçant, type et autres attributs. Supporte le chargement à partir
+    d'un CSV, la recherche avec filtres et la pagination.
     
-    Attributes
-    ----------
+    Attributs
+    ---------
     transactions : Dict[str, Transaction]
-        Dictionary mapping transaction IDs to Transaction objects.
+        Dictionnaire mappant les ID de transaction aux objets Transaction.
     customer_index : Dict[str, List[str]]
-        Index mapping customer IDs to lists of transaction IDs.
+        Index mappant les ID client aux listes d'ID de transaction.
     merchant_index : Dict[str, List[str]]
-        Index mapping merchant IDs to lists of transaction IDs.
+        Index mappant les ID commerçant aux listes d'ID de transaction.
     date_index : List[str]
-        List of transaction IDs sorted by date.
+        Liste des ID de transaction triés par date.
     type_index : Dict[str, List[str]]
-        Index mapping merchant category codes to lists of transaction IDs.
+        Index mappant les codes de catégorie de commerçant aux listes d'ID de transaction.
     use_chip_index : Dict[str, List[str]]
-        Index mapping use_chip types to lists of transaction IDs.
+        Index mappant les types use_chip aux listes d'ID de transaction.
     fraud_index : List[str]
-        List of transaction IDs flagged as fraudulent.
-    data_load_date : datetime, optional
-        When the transaction data was loaded.
-    min_date : datetime, optional
-        Earliest transaction date in the repository.
-    max_date : datetime, optional
-        Latest transaction date in the repository.
+        Liste des ID de transaction signalés comme frauduleux.
+    data_load_date : datetime, optionnel
+        Quand les données de transaction ont été chargées.
+    min_date : datetime, optionnel
+        Date de transaction la plus ancienne du référentiel.
+    max_date : datetime, optionnel
+        Date de transaction la plus récente du référentiel.
     """
 
     def __init__(self) -> None:
-        """Initialize the repository.
+        """Initialiser le référentiel.
         
-        Creates empty data structures for storing transactions and indexes.
+        Crée des structures de données vides pour stocker les transactions et les index.
         """
         self.transactions: Dict[str, Transaction] = {}
         self.customer_index: Dict[str, List[str]] = defaultdict(list)
@@ -73,24 +73,25 @@ class TransactionRepository:
         self.max_date: Optional[datetime] = None
 
     def load_from_csv(self, filepath: Optional[str] = None) -> None:
-        """Load transactions from CSV file.
+        """Charger les transactions à partir d'un fichier CSV.
         
-        Loads transaction data from a CSV file, parses each row, and populates
-        the repository with transactions and indexes. Logs progress and errors.
+        Charge les données de transaction à partir d'un fichier CSV, analyse chaque ligne
+        et remplit le référentiel avec les transactions et les index. Enregistre la
+        progression et les erreurs.
         
-        Parameters
+        Paramètres
         ----------
-        filepath : str, optional
-            Path to the CSV file. Defaults to "./data/transactions.csv".
+        filepath : str, optionnel
+            Chemin vers le fichier CSV. Par défaut "./data/transactions.csv".
         
-        Raises
-        ------
+        Lève
+        ----
         FileNotFoundError
-            If the CSV file does not exist.
+            Si le fichier CSV n'existe pas.
         InvalidTransactionData
-            If the CSV file has no headers or contains invalid data.
+            Si le fichier CSV n'a pas d'en-têtes ou contient des données invalides.
         
-        Examples
+        Exemples
         --------
         >>> repo = TransactionRepository()
         >>> repo.load_from_csv("data/transactions.csv")
@@ -136,25 +137,25 @@ class TransactionRepository:
             raise
 
     def _parse_transaction(self, row: Dict[str, str]) -> Transaction:
-        """Parse a transaction from a CSV row.
+        """Analyser une transaction à partir d'une ligne CSV.
         
-        Parses a CSV row dictionary into a Transaction object, handling
-        type conversions and data validation.
+        Analyse un dictionnaire de ligne CSV en un objet Transaction, en gérant
+        les conversions de type et la validation des données.
         
-        Parameters
+        Paramètres
         ----------
         row : Dict[str, str]
-            Dictionary representing a CSV row with transaction data.
+            Dictionnaire représentant une ligne CSV avec les données de transaction.
         
-        Returns
+        Retours
         -------
         Transaction
-            Parsed Transaction object.
+            Objet Transaction analysé.
         
-        Raises
-        ------
+        Lève
+        ----
         InvalidTransactionData
-            If the row contains invalid or missing required data.
+            Si la ligne contient des données invalides ou manquantes requises.
         """
         try:
             # Get date string and handle empty values
@@ -195,15 +196,15 @@ class TransactionRepository:
             raise InvalidTransactionData(f"Invalid transaction data: {e}")
 
     def _add_transaction(self, transaction: Transaction) -> None:
-        """Add a transaction to the repository.
+        """Ajouter une transaction au référentiel.
         
-        Adds a transaction to the repository and updates all indexes.
-        Updates min/max dates if necessary.
+        Ajoute une transaction au référentiel et met à jour tous les index.
+        Met à jour les dates min/max si nécessaire.
         
-        Parameters
+        Paramètres
         ----------
         transaction : Transaction
-            The transaction to add.
+            La transaction à ajouter.
         """
         self.transactions[transaction.id] = transaction
         self.customer_index[transaction.client_id].append(transaction.id)
@@ -221,33 +222,33 @@ class TransactionRepository:
             self.max_date = transaction.date
 
     def get_all_transactions(self) -> List[Transaction]:
-        """Get all transactions.
+        """Obtenir toutes les transactions.
         
-        Returns
+        Retours
         -------
         List[Transaction]
-            List of all transactions in the repository.
+            Liste de toutes les transactions du référentiel.
         """
         return list(self.transactions.values())
 
     def get_all(
         self, page: int = 1, limit: int = 50
     ) -> Tuple[List[Transaction], int]:
-        """Get paginated transactions.
+        """Obtenir les transactions paginées.
         
-        Retrieves all transactions with pagination, sorted by date in descending order.
+        Récupère toutes les transactions avec pagination, triées par date en ordre décroissant.
         
-        Parameters
+        Paramètres
         ----------
-        page : int, optional
-            Page number (1-indexed). Defaults to 1.
-        limit : int, optional
-            Number of items per page. Defaults to 50.
+        page : int, optionnel
+            Numéro de page (indexé à partir de 1). Par défaut 1.
+        limit : int, optionnel
+            Nombre d'éléments par page. Par défaut 50.
         
-        Returns
+        Retours
         -------
         Tuple[List[Transaction], int]
-            Tuple of (transactions for page, total count).
+            Tuple de (transactions pour la page, nombre total).
         """
         if page < 1:
             page = 1
@@ -265,40 +266,41 @@ class TransactionRepository:
         return transactions, total_count
 
     def get_by_id(self, transaction_id: str) -> Optional[Transaction]:
-        """Get a transaction by ID.
+        """Obtenir une transaction par ID.
         
-        Parameters
+        Paramètres
         ----------
         transaction_id : str
-            The transaction ID to retrieve.
+            L'ID de transaction à récupérer.
         
-        Returns
+        Retours
         -------
-        Transaction, optional
-            The transaction if found, None otherwise.
+        Transaction, optionnel
+            La transaction si trouvée, None sinon.
         """
         return self.transactions.get(transaction_id)
 
     def search(
         self, filters: SearchFilters, page: int = 1, limit: int = 50
     ) -> Tuple[List[Transaction], int]:
-        """Search transactions with filters.
+        """Rechercher les transactions avec des filtres.
         
-        Searches transactions using the provided filters and returns paginated results.
+        Recherche les transactions en utilisant les filtres fournis et retourne les
+        résultats paginés.
         
-        Parameters
+        Paramètres
         ----------
         filters : SearchFilters
-            Search filter criteria.
-        page : int, optional
-            Page number (1-indexed). Defaults to 1.
-        limit : int, optional
-            Number of items per page. Defaults to 50.
+            Critères de filtre de recherche.
+        page : int, optionnel
+            Numéro de page (indexé à partir de 1). Par défaut 1.
+        limit : int, optionnel
+            Nombre d'éléments par page. Par défaut 50.
         
-        Returns
+        Retours
         -------
         Tuple[List[Transaction], int]
-            Tuple of (filtered transactions for page, total count).
+            Tuple de (transactions filtrées pour la page, nombre total).
         """
         if page < 1:
             page = 1
@@ -373,14 +375,14 @@ class TransactionRepository:
         return paginated_results, total_count
 
     def delete(self, transaction_id: str) -> None:
-        """Delete a transaction.
+        """Supprimer une transaction.
         
-        Removes a transaction from the repository and all indexes.
+        Supprime une transaction du référentiel et de tous les index.
         
-        Parameters
+        Paramètres
         ----------
         transaction_id : str
-            The ID of the transaction to delete.
+            L'ID de la transaction à supprimer.
         """
         if transaction_id not in self.transactions:
             return
@@ -401,23 +403,23 @@ class TransactionRepository:
     def get_by_customer(
         self, customer_id: str, page: int = 1, limit: int = 50
     ) -> Tuple[List[Transaction], int]:
-        """Get transactions for a customer.
+        """Obtenir les transactions pour un client.
         
-        Retrieves all transactions for a specific customer with pagination.
+        Récupère toutes les transactions pour un client spécifique avec pagination.
         
-        Parameters
+        Paramètres
         ----------
         customer_id : str
-            The customer ID to retrieve transactions for.
-        page : int, optional
-            Page number (1-indexed). Defaults to 1.
-        limit : int, optional
-            Number of items per page. Defaults to 50.
+            L'ID du client pour lequel récupérer les transactions.
+        page : int, optionnel
+            Numéro de page (indexé à partir de 1). Par défaut 1.
+        limit : int, optionnel
+            Nombre d'éléments par page. Par défaut 50.
         
-        Returns
+        Retours
         -------
         Tuple[List[Transaction], int]
-            Tuple of (customer transactions for page, total count).
+            Tuple de (transactions du client pour la page, nombre total).
         """
         if page < 1:
             page = 1
@@ -441,23 +443,23 @@ class TransactionRepository:
     def get_by_merchant(
         self, merchant_id: str, page: int = 1, limit: int = 50
     ) -> Tuple[List[Transaction], int]:
-        """Get transactions for a merchant.
+        """Obtenir les transactions pour un commerçant.
         
-        Retrieves all transactions for a specific merchant with pagination.
+        Récupère toutes les transactions pour un commerçant spécifique avec pagination.
         
-        Parameters
+        Paramètres
         ----------
         merchant_id : str
-            The merchant ID to retrieve transactions for.
-        page : int, optional
-            Page number (1-indexed). Defaults to 1.
-        limit : int, optional
-            Number of items per page. Defaults to 50.
+            L'ID du commerçant pour lequel récupérer les transactions.
+        page : int, optionnel
+            Numéro de page (indexé à partir de 1). Par défaut 1.
+        limit : int, optionnel
+            Nombre d'éléments par page. Par défaut 50.
         
-        Returns
+        Retours
         -------
         Tuple[List[Transaction], int]
-            Tuple of (merchant transactions for page, total count).
+            Tuple de (transactions du commerçant pour la page, nombre total).
         """
         if page < 1:
             page = 1
@@ -483,19 +485,19 @@ class TransactionRepository:
         return paginated_transactions, total_count
 
     def get_all_by_type(self, mcc: str) -> List[Transaction]:
-        """Get all transactions of a specific type.
+        """Obtenir toutes les transactions d'un type spécifique.
         
-        Retrieves all transactions with a specific merchant category code.
+        Récupère toutes les transactions avec un code de catégorie de commerçant spécifique.
         
-        Parameters
+        Paramètres
         ----------
         mcc : str
-            The merchant category code to filter by.
+            Le code de catégorie de commerçant pour filtrer.
         
-        Returns
+        Retours
         -------
         List[Transaction]
-            List of transactions with the specified MCC.
+            Liste des transactions avec le MCC spécifié.
         """
         transaction_ids = self.type_index.get(mcc, [])
         return [
@@ -505,12 +507,12 @@ class TransactionRepository:
         ]
 
     def get_fraud_transactions(self) -> List[Transaction]:
-        """Get all fraudulent transactions.
+        """Obtenir toutes les transactions frauduleuses.
         
-        Returns
+        Retours
         -------
         List[Transaction]
-            List of all transactions flagged as fraudulent.
+            Liste de toutes les transactions signalées comme frauduleuses.
         """
         return [
             self.transactions[tid]
@@ -519,49 +521,49 @@ class TransactionRepository:
         ]
 
     def get_all_types(self) -> List[str]:
-        """Get all unique transaction types.
+        """Obtenir tous les types de transaction uniques.
         
-        Returns
+        Retours
         -------
         List[str]
-            List of all unique merchant category codes.
+            Liste de tous les codes de catégorie de commerçant uniques.
         """
         return list(self.type_index.keys())
 
     def get_all_customers(self) -> List[str]:
-        """Get all unique customer IDs.
+        """Obtenir tous les ID client uniques.
         
-        Returns
+        Retours
         -------
         List[str]
-            List of all unique customer IDs in the repository.
+            Liste de tous les ID client uniques du référentiel.
         """
         return list(self.customer_index.keys())
 
     def get_all_use_chip_types(self) -> List[str]:
-        """Get all unique use_chip types.
+        """Obtenir tous les types use_chip uniques.
         
-        Returns
+        Retours
         -------
         List[str]
-            List of all unique use_chip types.
+            Liste de tous les types use_chip uniques.
         """
         return list(self.use_chip_index.keys())
 
     def get_all_by_use_chip(self, use_chip: str) -> List[Transaction]:
-        """Get all transactions of a specific use_chip type.
+        """Obtenir toutes les transactions d'un type use_chip spécifique.
         
-        Retrieves all transactions with a specific use_chip type.
+        Récupère toutes les transactions avec un type use_chip spécifique.
         
-        Parameters
+        Paramètres
         ----------
         use_chip : str
-            The use_chip type to filter by.
+            Le type use_chip pour filtrer.
         
-        Returns
+        Retours
         -------
         List[Transaction]
-            List of transactions with the specified use_chip type.
+            Liste des transactions avec le type use_chip spécifié.
         """
         transaction_ids = self.use_chip_index.get(use_chip, [])
         return [

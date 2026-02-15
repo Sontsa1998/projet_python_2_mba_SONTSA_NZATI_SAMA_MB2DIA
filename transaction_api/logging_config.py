@@ -1,14 +1,14 @@
-"""Logging configuration for the Transaction API.
+"""Configuration du logging pour l'API Transaction.
 
-This module provides centralized logging configuration for the Transaction API,
-setting up both console and file handlers with consistent formatting.
+Ce module fournit la configuration centralisée du logging pour l'API Transaction,
+en configurant à la fois les gestionnaires de console et de fichier avec un formatage cohérent.
 
-Functions
+Fonctions
 ---------
 setup_logging()
-    Configure logging for the entire application.
+    Configurer le logging pour l'ensemble de l'application.
 get_logger(name)
-    Get a logger instance for a specific module.
+    Obtenir une instance de logger pour un module spécifique.
 """
 
 import logging
@@ -19,21 +19,21 @@ from transaction_api.config import LOG_LEVEL, LOG_FORMAT
 
 
 def setup_logging() -> None:
-    """Set up logging configuration.
+    """Configurer le logging.
     
-    Configures logging with both console and file handlers using the settings
-    from the config module. Creates a log file at 'transaction_api.log' and
-    streams logs to the console with consistent formatting.
+    Configure le logging avec à la fois des gestionnaires de console et de fichier
+    en utilisant les paramètres du module de configuration. Crée un fichier de log
+    à 'transaction_api.log' et diffuse les logs sur la console avec un formatage cohérent.
     
-    Returns
+    Retours
     -------
     None
     
-    Examples
+    Exemples
     --------
     >>> setup_logging()
     >>> logger = get_logger(__name__)
-    >>> logger.info("Application started")
+    >>> logger.info("Application démarrée")
     """
     logging_config: Dict[str, Any] = {
         "version": 1,
@@ -68,26 +68,26 @@ def setup_logging() -> None:
 
 
 def get_logger(name: str) -> logging.Logger:
-    """Get a logger instance.
+    """Obtenir une instance de logger.
     
-    Returns a logger instance for the specified module name. The logger is
-    configured with the settings established by setup_logging().
+    Retourne une instance de logger pour le nom de module spécifié. Le logger est
+    configuré avec les paramètres établis par setup_logging().
     
-    Parameters
+    Paramètres
     ----------
     name : str
-        The name of the logger, typically the module name (__name__).
+        Le nom du logger, généralement le nom du module (__name__).
     
-    Returns
+    Retours
     -------
     logging.Logger
-        A logger instance configured for the specified name.
+        Une instance de logger configurée pour le nom spécifié.
     
-    Examples
+    Exemples
     --------
     >>> logger = get_logger(__name__)
-    >>> logger.debug("Debug message")
-    >>> logger.info("Info message")
-    >>> logger.error("Error message")
+    >>> logger.debug("Message de débogage")
+    >>> logger.info("Message d'information")
+    >>> logger.error("Message d'erreur")
     """
     return logging.getLogger(name)

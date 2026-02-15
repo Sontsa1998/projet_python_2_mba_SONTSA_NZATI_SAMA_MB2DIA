@@ -1,37 +1,37 @@
-"""Configuration and constants for the Transaction API.
+"""Configuration et constantes pour l'API Transaction.
 
-This module provides centralized configuration settings for the Transaction API,
-including API metadata, data paths, pagination limits, performance thresholds,
-and logging configuration.
+Ce module fournit les paramètres de configuration centralisés pour l'API Transaction,
+y compris les métadonnées de l'API, les chemins de données, les limites de pagination,
+les seuils de performance et la configuration du logging.
 
-Attributes
-----------
+Attributs
+---------
 API_VERSION : str
-    The current version of the Transaction API.
+    La version actuelle de l'API Transaction.
 API_TITLE : str
-    The title of the Transaction API.
+    Le titre de l'API Transaction.
 API_DESCRIPTION : str
-    A brief description of the Transaction API's purpose.
+    Une brève description du but de l'API Transaction.
 CSV_FILE_PATH : str
-    Path to the CSV file containing transaction data.
+    Chemin d'accès au fichier CSV contenant les données de transactions.
 CHUNK_SIZE : int
-    Number of rows to read at a time when processing CSV data.
+    Nombre de lignes à lire à la fois lors du traitement des données CSV.
 DEFAULT_LIMIT : int
-    Default number of items to return in paginated responses.
+    Nombre par défaut d'éléments à retourner dans les réponses paginées.
 MAX_LIMIT : int
-    Maximum number of items allowed in a single paginated response.
+    Nombre maximum d'éléments autorisés dans une seule réponse paginée.
 MIN_LIMIT : int
-    Minimum number of items allowed in a paginated response.
+    Nombre minimum d'éléments autorisés dans une réponse paginée.
 RESPONSE_TIME_THRESHOLD_MS : float
-    Threshold in milliseconds for normal response times.
+    Seuil en millisecondes pour les temps de réponse normaux.
 COMPLEX_QUERY_THRESHOLD_MS : float
-    Threshold in milliseconds for complex query response times.
+    Seuil en millisecondes pour les temps de réponse des requêtes complexes.
 AMOUNT_BUCKETS : list
-    List of dictionaries defining transaction amount distribution buckets.
+    Liste de dictionnaires définissant les plages de distribution des montants de transactions.
 LOG_LEVEL : str
-    Logging level for the application (DEBUG, INFO, WARNING, ERROR, CRITICAL).
+    Niveau de logging pour l'application (DEBUG, INFO, WARNING, ERROR, CRITICAL).
 LOG_FORMAT : str
-    Format string for log messages.
+    Chaîne de format pour les messages de log.
 """
 
 import os

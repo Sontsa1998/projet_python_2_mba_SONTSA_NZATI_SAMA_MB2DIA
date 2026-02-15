@@ -1,4 +1,30 @@
-"""Streamlit application for Transaction API."""
+"""Application Streamlit pour l'API Transaction.
+
+Ce module fournit une interface utilisateur interactive basée sur Streamlit pour
+l'analyse des transactions, la détection de fraude et les informations sur les clients.
+L'application se connecte à l'API Transaction pour récupérer et afficher les données
+avec des visualisations interactives.
+
+Fonctions
+---------
+get_data(endpoint, params)
+    Récupère les données depuis l'API Transaction.
+post_data(endpoint, data)
+    Envoie des données à l'API Transaction.
+
+Pages
+-----
+Dashboard
+    Affiche les statistiques générales et les métriques clés.
+Clients
+    Gère l'affichage et la recherche des clients.
+Transactions
+    Affiche et recherche les transactions avec filtres avancés.
+Fraude
+    Affiche les statistiques de détection de fraude.
+Statistiques
+    Affiche les statistiques avancées et les distributions.
+"""
 
 import streamlit as st
 import pandas as pd
@@ -51,7 +77,29 @@ page = st.sidebar.radio(
 
 # Helper functions
 def get_data(endpoint, params=None):
-    """Fetch data from API."""
+    """Récupérer les données depuis l'API Transaction.
+    
+    Effectue une requête GET à l'API Transaction et retourne les données JSON.
+    Gère les erreurs de connexion et affiche les messages d'erreur appropriés.
+    
+    Paramètres
+    ----------
+    endpoint : str
+        Le point de terminaison de l'API (ex: "/stats/overview").
+    params : dict, optionnel
+        Paramètres de requête optionnels (ex: {"page": 1, "limit": 50}).
+    
+    Retours
+    -------
+    dict, optionnel
+        Les données JSON retournées par l'API, ou None en cas d'erreur.
+    
+    Exemples
+    --------
+    >>> data = get_data("/stats/overview")
+    >>> if data:
+    ...     print(data.get("total_count"))
+    """
     try:
         response = requests.get(
             f"{API_BASE_URL}{endpoint}", params=params, timeout=10
@@ -67,7 +115,30 @@ def get_data(endpoint, params=None):
 
 
 def post_data(endpoint, data):
-    """Post data to API."""
+    """Envoyer des données à l'API Transaction.
+    
+    Effectue une requête POST à l'API Transaction avec les données fournies.
+    Gère les erreurs de connexion et affiche les messages d'erreur appropriés.
+    
+    Paramètres
+    ----------
+    endpoint : str
+        Le point de terminaison de l'API (ex: "/transaction/transactionResearch/search").
+    data : dict
+        Les données à envoyer dans le corps de la requête.
+    
+    Retours
+    -------
+    dict, optionnel
+        Les données JSON retournées par l'API, ou None en cas d'erreur.
+    
+    Exemples
+    --------
+    >>> search_data = {"client_id": "C001", "min_amount": 100}
+    >>> results = post_data("/transaction/transactionResearch/search", search_data)
+    >>> if results:
+    ...     print(results.get("data"))
+    """
     try:
         response = requests.post(
             f"{API_BASE_URL}{endpoint}", json=data, timeout=10

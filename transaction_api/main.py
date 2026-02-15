@@ -1,24 +1,24 @@
-"""Main FastAPI application.
+"""Application FastAPI principale.
 
-This module sets up the FastAPI application with all routes, exception handlers,
-and lifecycle management for the Transaction API.
+Ce module configure l'application FastAPI avec toutes les routes, les gestionnaires
+d'exceptions et la gestion du cycle de vie pour l'API Transaction.
 
-Functions
+Fonctions
 ---------
 lifespan(app)
-    Async context manager for application startup and shutdown.
+    Gestionnaire de contexte asynchrone pour le démarrage et l'arrêt de l'application.
 transaction_not_found_handler(request, exc)
-    Exception handler for TransactionNotFound errors.
+    Gestionnaire d'exception pour les erreurs TransactionNotFound.
 customer_not_found_handler(request, exc)
-    Exception handler for CustomerNotFound errors.
+    Gestionnaire d'exception pour les erreurs CustomerNotFound.
 invalid_pagination_handler(request, exc)
-    Exception handler for InvalidPaginationParameters errors.
+    Gestionnaire d'exception pour les erreurs InvalidPaginationParameters.
 invalid_search_filters_handler(request, exc)
-    Exception handler for InvalidSearchFilters errors.
+    Gestionnaire d'exception pour les erreurs InvalidSearchFilters.
 general_exception_handler(request, exc)
-    Exception handler for general exceptions.
+    Gestionnaire d'exception pour les exceptions générales.
 health_check()
-    Health check endpoint.
+    Point de terminaison de vérification de santé.
 """
 
 from contextlib import asynccontextmanager
@@ -58,24 +58,24 @@ logger = get_logger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Lifespan context manager for FastAPI app.
+    """Gestionnaire de contexte de cycle de vie pour l'application FastAPI.
     
-    Manages application startup and shutdown events. Initializes the transaction
-    repository and loads data from CSV on startup.
+    Gère les événements de démarrage et d'arrêt de l'application. Initialise le
+    référentiel de transaction et charge les données du CSV au démarrage.
     
-    Parameters
+    Paramètres
     ----------
     app : FastAPI
-        The FastAPI application instance.
+        L'instance de l'application FastAPI.
     
-    Yields
-    ------
+    Cède
+    ----
     None
     
-    Raises
-    ------
+    Lève
+    ----
     Exception
-        If transaction data loading fails.
+        Si le chargement des données de transaction échoue.
     """
     logger.info("Starting Transaction API")
     app_context.repository = TransactionRepository()
@@ -104,21 +104,21 @@ app = FastAPI(
 async def transaction_not_found_handler(
     request: Request, exc: TransactionNotFound
 ):
-    """Handle TransactionNotFound exception.
+    """Gérer l'exception TransactionNotFound.
     
-    Returns a 404 response when a requested transaction is not found.
+    Retourne une réponse 404 quand une transaction demandée n'est pas trouvée.
     
-    Parameters
+    Paramètres
     ----------
     request : Request
-        The HTTP request object.
+        L'objet de requête HTTP.
     exc : TransactionNotFound
-        The exception that was raised.
+        L'exception qui a été levée.
     
-    Returns
+    Retours
     -------
     JSONResponse
-        JSON response with error details and 404 status code.
+        Réponse JSON avec les détails d'erreur et le code de statut 404.
     """
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
@@ -132,21 +132,21 @@ async def transaction_not_found_handler(
 
 @app.exception_handler(CustomerNotFound)
 async def customer_not_found_handler(request: Request, exc: CustomerNotFound):
-    """Handle CustomerNotFound exception.
+    """Gérer l'exception CustomerNotFound.
     
-    Returns a 404 response when a requested customer is not found.
+    Retourne une réponse 404 quand un client demandé n'est pas trouvé.
     
-    Parameters
+    Paramètres
     ----------
     request : Request
-        The HTTP request object.
+        L'objet de requête HTTP.
     exc : CustomerNotFound
-        The exception that was raised.
+        L'exception qui a été levée.
     
-    Returns
+    Retours
     -------
     JSONResponse
-        JSON response with error details and 404 status code.
+        Réponse JSON avec les détails d'erreur et le code de statut 404.
     """
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
@@ -163,21 +163,21 @@ async def invalid_pagination_handler(
     request: Request,
     exc: InvalidPaginationParameters,
 ):
-    """Handle InvalidPaginationParameters exception.
+    """Gérer l'exception InvalidPaginationParameters.
     
-    Returns a 400 response when pagination parameters are invalid.
+    Retourne une réponse 400 quand les paramètres de pagination sont invalides.
     
-    Parameters
+    Paramètres
     ----------
     request : Request
-        The HTTP request object.
+        L'objet de requête HTTP.
     exc : InvalidPaginationParameters
-        The exception that was raised.
+        L'exception qui a été levée.
     
-    Returns
+    Retours
     -------
     JSONResponse
-        JSON response with error details and 400 status code.
+        Réponse JSON avec les détails d'erreur et le code de statut 400.
     """
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
@@ -193,21 +193,21 @@ async def invalid_pagination_handler(
 async def invalid_search_filters_handler(
     request: Request, exc: InvalidSearchFilters
 ):
-    """Handle InvalidSearchFilters exception.
+    """Gérer l'exception InvalidSearchFilters.
     
-    Returns a 400 response when search filters are invalid.
+    Retourne une réponse 400 quand les filtres de recherche sont invalides.
     
-    Parameters
+    Paramètres
     ----------
     request : Request
-        The HTTP request object.
+        L'objet de requête HTTP.
     exc : InvalidSearchFilters
-        The exception that was raised.
+        L'exception qui a été levée.
     
-    Returns
+    Retours
     -------
     JSONResponse
-        JSON response with error details and 400 status code.
+        Réponse JSON avec les détails d'erreur et le code de statut 400.
     """
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
@@ -221,21 +221,21 @@ async def invalid_search_filters_handler(
 
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
-    """Handle general exceptions.
+    """Gérer les exceptions générales.
     
-    Catches any unhandled exceptions and returns a 500 error response.
+    Capture toute exception non gérée et retourne une réponse d'erreur 500.
     
-    Parameters
+    Paramètres
     ----------
     request : Request
-        The HTTP request object.
+        L'objet de requête HTTP.
     exc : Exception
-        The exception that was raised.
+        L'exception qui a été levée.
     
-    Returns
+    Retours
     -------
     JSONResponse
-        JSON response with error details and 500 status code.
+        Réponse JSON avec les détails d'erreur et le code de statut 500.
     """
     logger.error(f"Unexpected error: {exc}", exc_info=True)
     return JSONResponse(
@@ -250,16 +250,16 @@ async def general_exception_handler(request: Request, exc: Exception):
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint.
+    """Point de terminaison de vérification de santé.
     
-    Returns the health status of the API.
+    Retourne l'état de santé de l'API.
     
-    Returns
+    Retours
     -------
     dict
-        Dictionary with status indicator.
+        Dictionnaire avec l'indicateur d'état.
     
-    Examples
+    Exemples
     --------
     >>> response = await health_check()
     >>> response["status"]
