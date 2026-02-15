@@ -1,0 +1,6 @@
+include README.md
+include LICENSE
+include requirements.txt
+recursive-include transaction_api *.py
+recursive-include tests *.py
+recursive-include data *.csv

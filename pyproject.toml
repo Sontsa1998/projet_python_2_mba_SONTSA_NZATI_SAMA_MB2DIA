@@ -1,0 +1,114 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "transaction-api"
+version = "1.0.0"
+description = "Application FastAPI pour l'analyse des transactions, la détection de fraude et les informations sur les clients"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Christian SONTSA", email = "christian@example.com"},
+    {name = "Stéphane NZATI", email = "stephane@example.com"},
+    {name = "Brenda Camélia Sama", email = "brenda@example.com"},
+]
+keywords = ["transaction", "api", "fraud-detection", "analytics", "fastapi"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: French",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Office/Business :: Financial",
+]
+
+dependencies = [
+    "fastapi==0.128.8",
+    "uvicorn==0.30.0",
+    "pydantic==2.12.5",
+    "pydantic-core==2.41.5",
+    "starlette==0.52.1",
+    "pandas==2.2.0",
+    "numpy==1.26.1",
+    "python-multipart==0.0.6",
+    "typing-extensions==4.15.0",
+    "anyio==3.7.1",
+    "httpcore",
+    "certifi==2024.2.2",
+    "idna==3.11",
+    "sniffio==1.3.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==7.4.3",
+    "pytest-cov==4.1.0",
+    "hypothesis==6.88.0",
+    "black==23.12.0",
+    "flake8==6.1.0",
+    "isort==5.13.2",
+    "mypy==1.7.1",
+    "numpydoc",
+    "pydocstyle",
+    "flake8-docstrings",
+]
+ui = [
+    "streamlit==1.40.0",
+    "plotly==5.24.1",
+    "requests==2.32.3",
+]
+
+[project.urls]
+Repository = "https://github.com/Sontsa1998/projet_python_2_mba_SONTSA_NZATI_SAMA_MB2DIA.git"
+
+[project.scripts]
+transaction-api = "transaction_api.main:app"
+
+[tool.setuptools]
+packages = ["transaction_api"]
+
+[tool.setuptools.package-data]
+transaction_api = ["py.typed"]
+
+[tool.black]
+line-length = 88
+target-version = ['py310', 'py311', 'py312']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 88
+skip_gitignore = true
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+addopts = "--cov=transaction_api --cov-report=html --cov-report=term-missing"

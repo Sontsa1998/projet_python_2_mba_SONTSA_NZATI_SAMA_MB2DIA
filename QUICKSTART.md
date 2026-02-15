@@ -4,8 +4,8 @@
 
 ### 1. Cloner le projet
 ```bash
-git clone <repository-url>
-cd transaction-analytics
+git clone <https://github.com/Sontsa1998/projet_python_2_mba_SONTSA_NZATI_SAMA_MB2DIA.git>
+cd projet_python_2_mba_SONTSA_NZATI_SAMA_MB2DIA
 ```
 
 ### 2. Installer les dépendances

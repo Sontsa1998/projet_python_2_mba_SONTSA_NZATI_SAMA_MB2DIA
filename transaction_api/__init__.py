@@ -27,4 +27,30 @@ routes
     Gestionnaires de routes API organisés par fonctionnalité.
 services
     Services de logique métier.
+
+Exports Publics
+---------------
+__version__ : str
+    Version du paquet.
+__author__ : str
+    Auteurs du paquet.
+app : FastAPI
+    Instance de l'application FastAPI.
+TransactionRepository : class
+    Classe du référentiel de transactions.
 """
+
+__version__ = "1.0.0"
+__author__ = "Christian SONTSA, Stéphane NZATI, Brenda Camélia Sama"
+__all__ = [
+    "app",
+    "TransactionRepository",
+    "PaginationService",
+    "Transaction",
+    "SearchFilters",
+]
+
+from transaction_api.main import app
+from transaction_api.repository import TransactionRepository
+from transaction_api.pagination import PaginationService
+from transaction_api.models import Transaction, SearchFilters
